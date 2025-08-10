@@ -6,6 +6,7 @@ package VistaGeneral;
 
 import VistaEvento.RegistrarEventoDatos;
 import VistaInscripcion.InscripcionDatos;
+import VistaPago.RegistroPagoDatos;
 import VistaParticipante.RegistroParticipanteDatos;
 
 /**
@@ -30,6 +31,7 @@ public class FrameGeneral extends javax.swing.JFrame {
         jButton3 = new javax.swing.JButton();
         jButton4 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        jButton5 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
 
@@ -72,6 +74,13 @@ public class FrameGeneral extends javax.swing.JFrame {
             }
         });
 
+        jButton5.setText("Pago");
+        jButton5.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton5ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -85,7 +94,9 @@ public class FrameGeneral extends javax.swing.JFrame {
                 .addComponent(jButton4)
                 .addGap(37, 37, 37)
                 .addComponent(jButton2)
-                .addContainerGap(294, Short.MAX_VALUE))
+                .addGap(33, 33, 33)
+                .addComponent(jButton5)
+                .addContainerGap(189, Short.MAX_VALUE))
             .addComponent(jDesktopPane1)
         );
         layout.setVerticalGroup(
@@ -96,7 +107,8 @@ public class FrameGeneral extends javax.swing.JFrame {
                     .addComponent(jButton1)
                     .addComponent(jButton3)
                     .addComponent(jButton4)
-                    .addComponent(jButton2))
+                    .addComponent(jButton2)
+                    .addComponent(jButton5))
                 .addGap(18, 18, 18)
                 .addComponent(jDesktopPane1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
@@ -120,6 +132,10 @@ public class FrameGeneral extends javax.swing.JFrame {
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         jDesktopPane1.add(new RegistroParticipanteDatos()).setVisible(true);
     }//GEN-LAST:event_jButton4ActionPerformed
+
+    private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
+        jDesktopPane1.add(new RegistroPagoDatos()).setVisible(true);
+    }//GEN-LAST:event_jButton5ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -162,6 +178,7 @@ public class FrameGeneral extends javax.swing.JFrame {
     private javax.swing.JButton jButton2;
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
+    private javax.swing.JButton jButton5;
     private javax.swing.JDesktopPane jDesktopPane1;
     // End of variables declaration//GEN-END:variables
 }
