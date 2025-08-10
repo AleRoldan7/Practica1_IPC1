@@ -22,7 +22,7 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
 
     public void agregarDatos() {
         regis.agregarEvento(jTextCodigo.getText(), 
-                jTextFecha.getText(), jTextTipo.getText(), 
+                jTextFecha.getText(), jComboTipo, 
                 jTextTitulo.getText(), jTextUbi.getText(), jTextCupo.getText());
     }
 
@@ -35,7 +35,6 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
         jLabel2 = new javax.swing.JLabel();
         jTextCodigo = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        jTextTipo = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         jLabel5 = new javax.swing.JLabel();
         jTextTitulo = new javax.swing.JTextField();
@@ -44,6 +43,7 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
         jLabel7 = new javax.swing.JLabel();
         jTextCupo = new javax.swing.JTextField();
         jButton1 = new javax.swing.JButton();
+        jComboTipo = new javax.swing.JComboBox<>();
 
         setClosable(true);
         setIconifiable(true);
@@ -77,6 +77,8 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
             }
         });
 
+        jComboTipo.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccionar", "CHARLA", "CONGRESO", "TALLER", "DEBATE" }));
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -86,16 +88,16 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 47, Short.MAX_VALUE)
                         .addComponent(jTextCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addComponent(jLabel4)
-                        .addGap(18, 18, 18)
-                        .addComponent(jTextTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
                         .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jTextFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTextFecha, javax.swing.GroupLayout.PREFERRED_SIZE, 240, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
+                        .addComponent(jLabel4)
+                        .addGap(18, 18, 18)
+                        .addComponent(jComboTipo, javax.swing.GroupLayout.PREFERRED_SIZE, 155, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 60, Short.MAX_VALUE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -139,9 +141,9 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(jLabel4)
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(jTextTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel7)
-                        .addComponent(jTextCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                        .addComponent(jTextCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(jComboTipo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addGap(122, 122, 122)
                 .addComponent(jButton1)
                 .addGap(0, 152, Short.MAX_VALUE))
@@ -161,6 +163,7 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
+    private javax.swing.JComboBox<String> jComboTipo;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -171,7 +174,6 @@ public class RegistrarEventoDatos extends javax.swing.JInternalFrame {
     private javax.swing.JTextField jTextCodigo;
     private javax.swing.JTextField jTextCupo;
     private javax.swing.JTextField jTextFecha;
-    private javax.swing.JTextField jTextTipo;
     private javax.swing.JTextField jTextTitulo;
     private javax.swing.JTextField jTextUbi;
     // End of variables declaration//GEN-END:variables

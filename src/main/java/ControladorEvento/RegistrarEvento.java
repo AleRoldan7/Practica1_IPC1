@@ -11,6 +11,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import javax.swing.JComboBox;
 
 /**
  *
@@ -25,7 +26,7 @@ public class RegistrarEvento {
         connection.connect();
     }
 
-    public void agregarEvento(String codigo, String fecha, String tipo, String titulo, String ubi, String cupo) {
+    public void agregarEvento(String codigo, String fecha, JComboBox<String> tipo, String titulo, String ubi, String cupo) {
 
         Connection conn = connection.getConnect();
 
@@ -35,7 +36,7 @@ public class RegistrarEvento {
 
             pstm.setString(1, codigo);
             pstm.setString(2, fecha);
-            pstm.setString(3, tipo);
+            pstm.setString(3, tipo.getSelectedItem().toString());
             pstm.setString(4, titulo);
             pstm.setString(5, ubi);
             pstm.setString(6, cupo);
