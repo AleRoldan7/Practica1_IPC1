@@ -4,6 +4,9 @@
 
 package Inicio;
 
+import ConexionDBA.ConectarDBA;
+import VistaGeneral.FrameGeneral;
+
 /**
  *
  * @author alejandro
@@ -11,6 +14,10 @@ package Inicio;
 public class Practica_IPC2 {
 
     public static void main(String[] args) {
-        System.out.println("Hello World!");
+        ConectarDBA co = new ConectarDBA();
+        co.connect();
+        FrameGeneral fr = new FrameGeneral();
+        fr.setLocationRelativeTo(null);
+        fr.setVisible(true);
     }
 }
