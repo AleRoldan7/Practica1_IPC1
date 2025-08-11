@@ -39,7 +39,7 @@ public class RegistroInscripcion {
             pstm.setString(3, tipoInscripcion);
 
             int filas = pstm.executeUpdate();
-            return filas > 0; // true si insertó correctamente
+            return filas > 0; 
 
         } catch (SQLException e) {
             e.printStackTrace();
