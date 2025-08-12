@@ -5,6 +5,7 @@
 package VistaPago;
 
 import ControladorPago.RegistroPago;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -13,20 +14,27 @@ import ControladorPago.RegistroPago;
 public class RegistroPagoDatos extends javax.swing.JInternalFrame {
 
     private RegistroPago registroPago;
-    
+
     public RegistroPagoDatos() {
         initComponents();
         registroPago = new RegistroPago();
         registroPago.mostrarParticipantes(jComboCorreo);
         registroPago.mostrarEventos(jComboEvento);
     }
-    
-    public void registrarPago(){
-        registroPago.pagoRegistrado(jComboCorreo.getSelectedItem().toString(), jComboEvento.getSelectedItem().toString(),
+
+    public void registrarPago() {
+        boolean pagado = registroPago.pagoRegistrado(jComboCorreo.getSelectedItem().toString(), jComboEvento.getSelectedItem().toString(),
                 jComboTipoPago.getSelectedItem().toString(), jTextMonto.getText());
+
+        if (pagado) {
+            JOptionPane.showMessageDialog(this, "Se realizo el pago");
+        } else {
+            JOptionPane.showMessageDialog(this, "No se completo el pago");
+
+        }
+
     }
 
-    
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

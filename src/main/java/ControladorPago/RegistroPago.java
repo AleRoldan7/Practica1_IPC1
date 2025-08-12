@@ -23,56 +23,29 @@ public class RegistroPago {
         connection = new ConectarDBA();
         connection.connect();
     }
-    
-     /*
-    public void pagoRegistrado(String codigoEvento, String correoParticipante, String tipoPago, String monto) {
+
+    public boolean pagoRegistrado(String correoParticipante, String codigoEvento, String tipoPago, String monto) {
         Connection conn = connection.getConnect();
 
-        try {
+        String queryPago = "INSERT INTO pago (codigoEvento, idParticipante, tipoPago, monto)" +
+                            "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?, ?)";
+        
+        try (PreparedStatement pstm = conn.prepareStatement(queryPago)){
             
-            String sqlIdParticipante = "SELECT idParticipante FROM registro_participante";
-            
+            pstm.setString(1, codigoEvento);
+            pstm.setString(2, correoParticipante);
+            pstm.setString(3, tipoPago);
+            pstm.setString(4, monto);
            
-            String sqlId = "SELECT idParticipante FROM registro_participante WHERE Correo = ?";
-            int idParticipante = -1;
-            try (PreparedStatement psId = conn.prepareStatement(sqlId)) {
-                psId.setString(1, correoParticipante);
-                try (ResultSet rs = psId.executeQuery()) {
-                    if (rs.next()) {
-                        idParticipante = rs.getInt("idParticipante");
-                    }
-                }
-            }
-
-            if (idParticipante == -1) {
-                System.out.println("No se encontró el participante con ese correo");
-                return;
-            }
-
-            */
+            int fila =  pstm.executeUpdate();
+            return fila > 0;
             
-            /*
-            String sqlPago = "INSERT INTO pago (codigoEvento, idParticipante, tipoPago, monto) VALUES (?, ?, ?, ?)";
-            try (PreparedStatement psPago = conn.prepareStatement(sqlPago)) {
-                psPago.setString(1, codigoEvento);
-                psPago.setInt(2, idParticipante);
-                psPago.setString(3, tipoPago);
-                psPago.setInt(4, Integer.parseInt(monto));
-
-                int filas = psPago.executeUpdate();
-                if (filas > 0) {
-                    System.out.println("Pago registrado correctamente");
-                } else {
-                    System.out.println("No se registró el pago");
-                }
-            }
-
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-
+        
     }
-    */
 
     public void mostrarParticipantes(JComboBox<String> correo) {
 
@@ -81,9 +54,9 @@ public class RegistroPago {
         correo.removeAllItems();
         correo.addItem("Seleccionar Correo");
 
-        String query = "SELECT Correo FROM registro_participante";
-        System.out.println(query);
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
+        String queryCorreo = "SELECT Correo FROM registro_participante";
+        System.out.println(queryCorreo);
+        try (PreparedStatement pstm = conn.prepareStatement(queryCorreo); ResultSet rs = pstm.executeQuery()) {
 
             while (rs.next()) {
 
@@ -102,9 +75,9 @@ public class RegistroPago {
         evento.removeAllItems();
         evento.addItem("Seleccionar Evento");
 
-        String query = "SELECT Codigo FROM registro_evento";
+        String queryEvento = "SELECT Codigo FROM registro_evento";
 
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
+        try (PreparedStatement pstm = conn.prepareStatement(queryEvento); ResultSet rs = pstm.executeQuery()) {
 
             while (rs.next()) {
 

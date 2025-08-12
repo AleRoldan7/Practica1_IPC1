@@ -112,10 +112,11 @@ public class RegistroInscripcion {
             return false;
         }
     }
-     */
+     
     public boolean validarInscripcion(String correoParticipante, String codigoEvento) {
         Connection conn = connection.getConnect();
 
+        // 1️⃣ Verificar que haya pago registrado
         String sqlVerificar
                 = "SELECT COUNT(*) "
                 + "FROM pago pa "
@@ -128,10 +129,12 @@ public class RegistroInscripcion {
 
             try (ResultSet rs = psVerificar.executeQuery()) {
                 if (rs.next() && rs.getInt(1) > 0) {
+
+                    // 2️⃣ Marcar inscripción como válida (1)
                     String sqlActualizar
                             = "UPDATE inscripcion i "
                             + "JOIN registro_participante p ON i.idParticipante = p.idParticipante "
-                            + "SET i.validada = TRUE "
+                            + "SET i.inscripcionValida = 1 "
                             + "WHERE p.Correo = ? AND i.codigoEvento = ?";
 
                     try (PreparedStatement psActualizar = conn.prepareStatement(sqlActualizar)) {
@@ -139,10 +142,16 @@ public class RegistroInscripcion {
                         psActualizar.setString(2, codigoEvento);
 
                         int filas = psActualizar.executeUpdate();
-                        return filas > 0;
+                        if (filas > 0) {
+                            System.out.println("✅ Inscripción validada correctamente");
+                            return true;
+                        } else {
+                            System.out.println("⚠ La inscripción no existe para este participante y evento");
+                            return false;
+                        }
                     }
                 } else {
-                    System.out.println("No existe pago para este participante en este evento");
+                    System.out.println("❌ No existe pago registrado para este participante y evento");
                     return false;
                 }
             }
@@ -152,5 +161,6 @@ public class RegistroInscripcion {
             return false;
         }
     }
+    */
 
 }
