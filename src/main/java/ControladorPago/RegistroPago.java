@@ -5,12 +5,10 @@
 package ControladorPago;
 
 import ConexionDBA.ConectarDBA;
-import java.awt.List;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import javax.swing.JComboBox;
 
 /**
@@ -18,48 +16,47 @@ import javax.swing.JComboBox;
  * @author alejandro
  */
 public class RegistroPago {
-    
+
     private ConectarDBA connection;
 
     public RegistroPago() {
         connection = new ConectarDBA();
         connection.connect();
     }
-    
-    
-    public void pagoRegistrado(String codigoEvento, String correoParticipante, String tipoPago, String monto){
+
+    public boolean pagoRegistrado(String correoParticipante, String codigoEvento, String tipoPago, String monto) {
         Connection conn = connection.getConnect();
+
+        String queryPago = "INSERT INTO pago (codigoEvento, idParticipante, tipoPago, monto)" +
+                            "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?, ?)";
         
-        String query = "INSERT INTO pago (codigoEvento, idParticipante, tipoPago)" 
-                + "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?, ?)";
-        
-        try (PreparedStatement pstm = conn.prepareStatement(query)){
+        try (PreparedStatement pstm = conn.prepareStatement(queryPago)){
             
             pstm.setString(1, codigoEvento);
             pstm.setString(2, correoParticipante);
             pstm.setString(3, tipoPago);
             pstm.setString(4, monto);
-            
-            int filas = pstm.executeUpdate();
+           
+            int fila =  pstm.executeUpdate();
+            return fila > 0;
             
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
-                
         
     }
-    
+
     public void mostrarParticipantes(JComboBox<String> correo) {
 
         Connection conn = connection.getConnect();
-        
+
         correo.removeAllItems();
         correo.addItem("Seleccionar Correo");
-       
 
-        String query = "SELECT Correo FROM registro_participante";
-        System.out.println(query);
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
+        String queryCorreo = "SELECT Correo FROM registro_participante";
+        System.out.println(queryCorreo);
+        try (PreparedStatement pstm = conn.prepareStatement(queryCorreo); ResultSet rs = pstm.executeQuery()) {
 
             while (rs.next()) {
 
@@ -77,11 +74,10 @@ public class RegistroPago {
 
         evento.removeAllItems();
         evento.addItem("Seleccionar Evento");
-        
 
-        String query = "SELECT Codigo FROM registro_evento";
+        String queryEvento = "SELECT Codigo FROM registro_evento";
 
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
+        try (PreparedStatement pstm = conn.prepareStatement(queryEvento); ResultSet rs = pstm.executeQuery()) {
 
             while (rs.next()) {
 
@@ -91,10 +87,5 @@ public class RegistroPago {
             e.printStackTrace();
         }
     }
-    
 
-    
-    
-    
-    
 }

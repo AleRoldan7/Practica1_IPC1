@@ -5,6 +5,7 @@
 package Inicio;
 
 import ConexionDBA.ConectarDBA;
+import ControladorPago.RegistroPago;
 import VistaGeneral.FrameGeneral;
 
 /**
@@ -19,5 +20,7 @@ public class Practica_IPC2 {
         FrameGeneral fr = new FrameGeneral();
         fr.setLocationRelativeTo(null);
         fr.setVisible(true);
+        
+        
     }
 }
