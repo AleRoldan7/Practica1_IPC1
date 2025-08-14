@@ -15,17 +15,15 @@ import javax.swing.JComboBox;
  *
  * @author alejandro
  */
-public class RegistroInscripcion {
+public class RegistroInscripcion extends ConectarDBA{
 
-    private ConectarDBA connection;
 
     public RegistroInscripcion() {
-        connection = new ConectarDBA();
-        connection.connect();
+        super();
     }
 
     public boolean agregarInscripcion(String codigoEvento, String correoParticipante, String tipoInscripcion) {
-        Connection conn = connection.getConnect();
+        Connection conn = getConnect();
 
         String query = "INSERT INTO inscripcion (codigoEvento, idParticipante, tipoInscripcion) "
                 + "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?)";
@@ -46,7 +44,7 @@ public class RegistroInscripcion {
 
     public void mostrarParticipantes(JComboBox<String> correo) {
 
-        Connection conn = connection.getConnect();
+        Connection conn = getConnect();
 
         correo.removeAllItems();
         correo.addItem("Seleccionar Correo");
@@ -67,7 +65,7 @@ public class RegistroInscripcion {
     }
 
     public void mostrarEventos(JComboBox<String> evento) {
-        Connection conn = connection.getConnect();
+        Connection conn = getConnect();
 
         evento.removeAllItems();
         evento.addItem("Seleccionar Evento");
@@ -88,7 +86,7 @@ public class RegistroInscripcion {
     
     public boolean validarInscripcion(String correo, String codigoEvento){
         
-        Connection conn = connection.getConnect();
+        Connection conn = getConnect();
         return false;
         
     }
