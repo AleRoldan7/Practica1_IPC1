@@ -9,8 +9,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 import javax.swing.JComboBox;
 
 /**
@@ -52,7 +50,6 @@ public class RegistroInscripcion {
 
         correo.removeAllItems();
         correo.addItem("Seleccionar Correo");
-        List<String> correParticipante = new ArrayList<>();
 
         String query = "SELECT Correo FROM registro_participante";
         System.out.println(query);
@@ -74,7 +71,6 @@ public class RegistroInscripcion {
 
         evento.removeAllItems();
         evento.addItem("Seleccionar Evento");
-        List<String> eventoExitente = new ArrayList<>();
 
         String query = "SELECT Codigo FROM registro_evento";
 
@@ -87,6 +83,14 @@ public class RegistroInscripcion {
         } catch (SQLException e) {
             e.printStackTrace();
         }
+    }
+    
+    
+    public boolean validarInscripcion(String correo, String codigoEvento){
+        
+        Connection conn = connection.getConnect();
+        return false;
+        
     }
 
 }
