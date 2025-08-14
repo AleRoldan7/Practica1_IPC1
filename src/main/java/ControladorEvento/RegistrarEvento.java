@@ -16,18 +16,16 @@ import java.sql.SQLException;
  *
  * @author alejandro
  */
-public class RegistrarEvento {
+public class RegistrarEvento extends ConectarDBA{
 
-    private ConectarDBA connection;
 
     public RegistrarEvento() {
-        connection = new ConectarDBA();
-        connection.connect();
+        super();
     }
 
     public void agregarEvento(String codigo, String fecha, String tipo, String titulo, String ubi, String cupo) {
 
-        Connection conn = connection.getConnect();
+        Connection conn = getConnect();
 
         String query = "INSERT INTO registro_evento (Codigo, Fecha_Evento, Tipo_Evento, Titulo, Ubicacion, Cupo_Maximo) VALUES (?,?,?,?,?,?)";
 
