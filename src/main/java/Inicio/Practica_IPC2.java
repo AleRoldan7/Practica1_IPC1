@@ -5,7 +5,6 @@
 package Inicio;
 
 import ConexionDBA.ConectarDBA;
-import ControladorPago.RegistroPago;
 import VistaGeneral.FrameGeneral;
 
 /**
