@@ -19,6 +19,12 @@ public class ConectarDBA {
     private static final String PASSWORD = "010418";
 
     private Connection connection;
+
+    public ConectarDBA() {
+        connect();
+    }
+    
+    
     
     public void connect() {
         System.out.println("Conecto" + URL);
