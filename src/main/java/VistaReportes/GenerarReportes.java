@@ -85,7 +85,6 @@ public class GenerarReportes extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonParticipanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonParticipanteActionPerformed
-        // Seleccionar archivo con JFileChooser
         javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
         fileChooser.setDialogTitle("Guardar Reporte Participantes");
         fileChooser.setSelectedFile(new java.io.File("ReporteParticipantes.html"));
@@ -99,7 +98,6 @@ public class GenerarReportes extends javax.swing.JInternalFrame {
             List<ReporteParticipante> participantes = controlador.reporteParticipantes("", "", "");
             reporteHTML.generarReporteParticipantes(participantes, "ReporteParticipantes.html");
 
-            // Mensaje de confirmación
             javax.swing.JOptionPane.showMessageDialog(this, "Reporte generado correctamente en:\n" + ruta);
         }
     }//GEN-LAST:event_jButtonParticipanteActionPerformed
