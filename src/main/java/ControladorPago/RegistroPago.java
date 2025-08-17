@@ -15,22 +15,21 @@ import javax.swing.JComboBox;
  *
  * @author alejandro
  */
-public class RegistroPago {
+public class RegistroPago extends ConectarDBA{
 
-    private ConectarDBA connection;
+    
 
     public RegistroPago() {
-        connection = new ConectarDBA();
-        connection.connect();
+        super();
     }
 
     public boolean pagoRegistrado(String correoParticipante, String codigoEvento, String tipoPago, String monto) {
-        Connection conn = connection.getConnect();
+        
 
         String queryPago = "INSERT INTO pago (codigoEvento, idParticipante, tipoPago, monto)" +
                             "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?, ?)";
         
-        try (PreparedStatement pstm = conn.prepareStatement(queryPago)){
+        try (PreparedStatement pstm = getConnect().prepareStatement(queryPago)){
             
             pstm.setString(1, codigoEvento);
             pstm.setString(2, correoParticipante);
@@ -47,45 +46,6 @@ public class RegistroPago {
         
     }
 
-    public void mostrarParticipantes(JComboBox<String> correo) {
-
-        Connection conn = connection.getConnect();
-
-        correo.removeAllItems();
-        correo.addItem("Seleccionar Correo");
-
-        String queryCorreo = "SELECT Correo FROM registro_participante";
-        System.out.println(queryCorreo);
-        try (PreparedStatement pstm = conn.prepareStatement(queryCorreo); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                correo.addItem(rs.getString("Correo"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void mostrarEventos(JComboBox<String> evento) {
-        Connection conn = connection.getConnect();
-
-        evento.removeAllItems();
-        evento.addItem("Seleccionar Evento");
-
-        String queryEvento = "SELECT Codigo FROM registro_evento";
-
-        try (PreparedStatement pstm = conn.prepareStatement(queryEvento); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                evento.addItem(rs.getString("Codigo"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
+   
 
 }

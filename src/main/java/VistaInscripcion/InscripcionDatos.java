@@ -5,6 +5,7 @@
 package VistaInscripcion;
 
 import ControladorInscrip.RegistroInscripcion;
+import DatosParticipanteEventos.ControladorGeneral;
 import javax.swing.JOptionPane;
 
 /**
@@ -14,23 +15,15 @@ import javax.swing.JOptionPane;
 public class InscripcionDatos extends javax.swing.JInternalFrame {
 
     private RegistroInscripcion regiInscripcion;
-
+    private ControladorGeneral controladorGeneral = new ControladorGeneral();
     public InscripcionDatos() {
         initComponents();
         regiInscripcion = new RegistroInscripcion();
-        agregarCorreo();
-        agregarEvento();
+        controladorGeneral.mostrarParticipantes(jComboCorreo);
+        controladorGeneral.mostrarEventos(jComboEvento);
     }
 
-    public void agregarCorreo() {
-
-        regiInscripcion.mostrarParticipantes(jComboCorreo);
-
-    }
-
-    public void agregarEvento() {
-        regiInscripcion.mostrarEventos(jComboEvento);
-    }
+    
 
     public void inscribir() {
         if (jComboEvento.getSelectedIndex() == 0 || jComboCorreo.getSelectedIndex() == 0 || jComboTipoInscrip.getSelectedIndex() == 0) {

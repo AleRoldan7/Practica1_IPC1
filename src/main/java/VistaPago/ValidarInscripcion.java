@@ -5,6 +5,7 @@
 package VistaPago;
 
 import ControladorInscrip.RegistroInscripcion;
+import DatosParticipanteEventos.ControladorGeneral;
 import javax.swing.JOptionPane;
 
 /**
@@ -14,12 +15,13 @@ import javax.swing.JOptionPane;
 public class ValidarInscripcion extends javax.swing.JInternalFrame {
 
     private RegistroInscripcion regiInscripcion;
-
+    private ControladorGeneral controladorGeneral = new ControladorGeneral();
+    
     public ValidarInscripcion() {
         initComponents();
         regiInscripcion = new RegistroInscripcion();
-        regiInscripcion.mostrarParticipantes(jComboCorreo);
-        regiInscripcion.mostrarEventos(jComboEvento);
+        controladorGeneral.mostrarParticipantes(jComboCorreo);
+        controladorGeneral.mostrarEventos(jComboEvento);
     }
     
     
