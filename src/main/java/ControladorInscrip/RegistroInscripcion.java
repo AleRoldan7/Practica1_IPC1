@@ -15,26 +15,24 @@ import javax.swing.JComboBox;
  *
  * @author alejandro
  */
-public class RegistroInscripcion extends ConectarDBA{
-
+public class RegistroInscripcion extends ConectarDBA {
 
     public RegistroInscripcion() {
         super();
     }
 
     public boolean agregarInscripcion(String codigoEvento, String correoParticipante, String tipoInscripcion) {
-        Connection conn = getConnect();
 
         String query = "INSERT INTO inscripcion (codigoEvento, idParticipante, tipoInscripcion) "
                 + "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?)";
 
-        try (PreparedStatement pstm = conn.prepareStatement(query)) {
+        try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
             pstm.setString(1, codigoEvento);
             pstm.setString(2, correoParticipante);
             pstm.setString(3, tipoInscripcion);
 
             int filas = pstm.executeUpdate();
-            return filas > 0; 
+            return filas > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,13 +40,24 @@ public class RegistroInscripcion extends ConectarDBA{
         }
     }
 
-    
-    
-    public boolean validarInscripcion(String correo, String codigoEvento){
-        
-        Connection conn = getConnect();
+    public boolean validarInscripcion(String correoParticipante, String codigoEvento) {
+        String query = "SELECT COUNT(*) "
+                + "FROM pago p "
+                + "INNER JOIN registro_participante rp ON p.idParticipante = rp.idParticipante "
+                + "WHERE rp.Correo = ? AND p.codigoEvento = ?";
+
+        try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
+            pstm.setString(1, correoParticipante);
+            pstm.setString(2, codigoEvento);
+
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         return false;
-        
     }
 
 }

@@ -5,6 +5,7 @@
 package VistaInscripcion;
 
 import ControladorInscrip.RegistroInscripcion;
+import ControladorInscrip.TipoInscripcion;
 import DatosParticipanteEventos.ControladorGeneral;
 import javax.swing.JOptionPane;
 
@@ -16,13 +17,23 @@ public class InscripcionDatos extends javax.swing.JInternalFrame {
 
     private RegistroInscripcion regiInscripcion;
     private ControladorGeneral controladorGeneral = new ControladorGeneral();
+    
     public InscripcionDatos() {
         initComponents();
         regiInscripcion = new RegistroInscripcion();
         controladorGeneral.mostrarParticipantes(jComboCorreo);
         controladorGeneral.mostrarEventos(jComboEvento);
+        agregarTipo();
     }
 
+    
+    public void agregarTipo(){
+        jComboTipoInscrip.removeAllItems();
+        jComboTipoInscrip.addItem("Seleccione Tipo");
+        for (TipoInscripcion tipo : TipoInscripcion.values()) {
+            jComboTipoInscrip.addItem(tipo.name());
+        }
+    }
     
 
     public void inscribir() {
@@ -71,7 +82,7 @@ public class InscripcionDatos extends javax.swing.JInternalFrame {
 
         jLabel4.setText("Tipo Inscripción");
 
-        jComboTipoInscrip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", "ASISTENTE", "CONFERENCISTA", "TALLERISTA", "OTRO" }));
+        jComboTipoInscrip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Seleccione", " " }));
 
         jButton1.setText("Inscribir");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -114,7 +125,7 @@ public class InscripcionDatos extends javax.swing.JInternalFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addGap(357, 357, 357)
                         .addComponent(jButton1)))
-                .addContainerGap(322, Short.MAX_VALUE))
+                .addContainerGap(412, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
