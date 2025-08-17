@@ -6,6 +6,7 @@ package Inicio;
 
 import ConexionDBA.ConectarDBA;
 import VistaGeneral.FrameGeneral;
+import java.time.LocalTime;
 
 /**
  *
@@ -14,11 +15,13 @@ import VistaGeneral.FrameGeneral;
 public class Practica_IPC2 {
 
     public static void main(String[] args) {
+        
         ConectarDBA co = new ConectarDBA();
         co.connect();
         FrameGeneral fr = new FrameGeneral();
         fr.setLocationRelativeTo(null);
         fr.setVisible(true);
+        
         
         
     }

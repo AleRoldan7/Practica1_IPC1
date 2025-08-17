@@ -5,13 +5,12 @@
 package ControladorActividad;
 
 import ConexionDBA.ConectarDBA;
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import javax.swing.JComboBox;
+
 
 /**
  *
@@ -23,73 +22,49 @@ public class RegistrarActividad extends ConectarDBA {
         super();
     }
 
-    public boolean registrarActividad(String codigoActividad, String codigoEvento, String tipoActividad,
-            String titulo, String correo, LocalTime horaInicio, LocalTime horaFin, String cupoMaximo) {
+    public boolean agregarActividad(String codigoAct, String codigoEvento, String tipo, String titulo,
+            String correoPersona, LocalTime inicio, LocalTime fin, int maxCupo) {
 
-        Connection conn = getConnect();
-
-        String queryActividad = "INSERT INTO registrar_actividad (codigoEvento, tipoActividad, tituloActividad, correoPersona, "
-                + "horaInicio, horaFin, cupoMaximo) VALUES (?, ?, ?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), "
-                + "?, ?, ?, ?)";
-
-        try (PreparedStatement pstm = conn.prepareCall(queryActividad)) {
-
-            pstm.setString(1, codigoActividad);
-            pstm.setString(2, codigoEvento);
-            pstm.setString(3, tipoActividad);
-            pstm.setString(4, titulo);
-            pstm.setString(5, correo);
-            pstm.setString(6, horaInicio.format(DateTimeFormatter.ofPattern("hh:mm")));
-            pstm.setString(7, horaFin.format(DateTimeFormatter.ofPattern("hh:mm")));
-            pstm.setString(8, cupoMaximo);
-
-            int fila = pstm.executeUpdate();
-            return fila > 0;
-
+        int idParticipante = -1;
+        String consultaParticipante = "SELECT p.idParticipante "
+                + "FROM registro_participante p "
+                + "INNER JOIN inscripcion i ON p.idParticipante = i.idParticipante "
+                + "WHERE p.Correo = ? AND i.tipoInscripcion <> 'ASISTENTE' AND i.codigoEvento = ?";
+        try (PreparedStatement ps = getConnect().prepareStatement(consultaParticipante)) {
+            ps.setString(1, correoPersona);
+            ps.setString(2, codigoEvento);
+            ResultSet resultado = ps.executeQuery();
+            if (resultado.next()) {
+                idParticipante = resultado.getInt("idParticipante");
+            } else {
+                System.out.println("Participante no válido o solo ASISTENTE: " + correoPersona);
+                return false;
+            }
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
-    }
 
-    public void mostrarParticipantes(JComboBox<String> correo) {
+        String insertarActividad = "INSERT INTO registrar_actividad "
+                + "(codigoActividad, codigoEvento, tipoActividad, tituloActividad, idParticipante, horaInicio, horaFin, cupoMaximo) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
-        Connection conn = getConnect();
+        try (PreparedStatement psInsert = getConnect().prepareStatement(insertarActividad)) {
+            psInsert.setString(1, codigoAct);
+            psInsert.setString(2, codigoEvento);
+            psInsert.setString(3, tipo);
+            psInsert.setString(4, titulo);
+            psInsert.setInt(5, idParticipante);
+            psInsert.setTime(6, Time.valueOf(inicio));
+            psInsert.setTime(7, Time.valueOf(fin));
+            psInsert.setInt(8, maxCupo);
 
-        correo.removeAllItems();
-        correo.addItem("Seleccionar Correo");
-
-        String query = "SELECT Correo FROM registro_participante";
-        System.out.println(query);
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                correo.addItem(rs.getString("Correo"));
-            }
+            int filas = psInsert.executeUpdate();
+            return filas > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-
-    }
-
-    public void mostrarEventos(JComboBox<String> evento) {
-        Connection conn = getConnect();
-
-        evento.removeAllItems();
-        evento.addItem("Seleccionar Evento");
-
-        String query = "SELECT Codigo FROM registro_evento";
-
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                evento.addItem(rs.getString("Codigo"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            return false;
         }
     }
 }

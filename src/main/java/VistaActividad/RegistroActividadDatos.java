@@ -6,6 +6,7 @@ package VistaActividad;
 
 import ControladorActividad.RegistrarActividad;
 import ControladorActividad.TipoCharla;
+import DatosParticipanteEventos.ControladorGeneral;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -18,12 +19,13 @@ import javax.swing.JOptionPane;
 public class RegistroActividadDatos extends javax.swing.JInternalFrame {
 
     private RegistrarActividad registrarActividad;
+    private ControladorGeneral controladorGeneral = new ControladorGeneral();
 
     public RegistroActividadDatos() {
         initComponents();
         registrarActividad = new RegistrarActividad();
-        registrarActividad.mostrarEventos(jComboEvento);
-        registrarActividad.mostrarParticipantes(jComboCorreo);
+        controladorGeneral.mostrarEventos(jComboEvento);
+        controladorGeneral.mostrarParticipantes(jComboCorreo);
         agregarTipoCharla();
     }
 
@@ -35,33 +37,56 @@ public class RegistroActividadDatos extends javax.swing.JInternalFrame {
     }
 
     public void agregarActividad() {
+        if (jTextCodigo.getText().isBlank() || jComboEvento.getSelectedIndex() == 0
+                || jComboActividad.getSelectedIndex() == 0 || jTextTitulo.getText().isBlank()
+                || jComboCorreo.getSelectedIndex() == 0 || jTextInicio.getText().isBlank()
+                || jTextFin.getText().isBlank() || jTextCupo.getText().isBlank()) {
+            JOptionPane.showMessageDialog(this, "Llenar todos los campos o es una participante asistente");
+            return;
+        }
+
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime horaInicio, horaFin;
         try {
             horaInicio = LocalTime.parse(jTextInicio.getText(), formatter);
             horaFin = LocalTime.parse(jTextFin.getText(), formatter);
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Hora inválida. Debe usar formato HH:mm (ej: 09:30)");
+            JOptionPane.showMessageDialog(this, "Formato de hora no valido");
             return;
         }
 
-       
+        if (!horaInicio.isBefore(horaFin)) {
+            JOptionPane.showMessageDialog(this, "La hora de inicio esta mal");
+            return;
+        }
 
-        boolean agrego = registrarActividad.registrarActividad(
-                jTextCodigo.getText(),
+        int cupo;
+        try {
+            cupo = Integer.parseInt(jTextCupo.getText());
+            if (cupo <= 0) {
+                JOptionPane.showMessageDialog(this, "El cupo solo puede ser positivo");
+                return;
+            }
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Cupo no valido");
+            return;
+        }
+
+        boolean agrego = registrarActividad.agregarActividad(
+                jTextCodigo.getText().trim(),
                 jComboEvento.getSelectedItem().toString(),
                 jComboActividad.getSelectedItem().toString(),
-                jTextTitulo.getText(),
+                jTextTitulo.getText().trim(),
                 jComboCorreo.getSelectedItem().toString(),
                 horaInicio,
                 horaFin,
-                jTextCupo.getText()
+                cupo
         );
 
         if (agrego) {
-            JOptionPane.showMessageDialog(this, "Se agregó la actividad correctamente.");
+            JOptionPane.showMessageDialog(this, "Actividad Agregada");
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo agregar la actividad.");
+            JOptionPane.showMessageDialog(this, "No se pudo agregar");
         }
     }
 
@@ -170,12 +195,13 @@ public class RegistroActividadDatos extends javax.swing.JInternalFrame {
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addGap(36, 36, 36)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                            .addComponent(jLabel2)
-                            .addComponent(jTextCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                                 .addComponent(jLabel9)
-                                .addComponent(jTextCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                                .addComponent(jTextCupo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                                .addComponent(jLabel2)
+                                .addComponent(jTextCodigo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGap(52, 52, 52)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel3)
