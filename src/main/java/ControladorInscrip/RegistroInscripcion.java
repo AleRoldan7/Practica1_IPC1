@@ -15,26 +15,24 @@ import javax.swing.JComboBox;
  *
  * @author alejandro
  */
-public class RegistroInscripcion extends ConectarDBA{
-
+public class RegistroInscripcion extends ConectarDBA {
 
     public RegistroInscripcion() {
         super();
     }
 
     public boolean agregarInscripcion(String codigoEvento, String correoParticipante, String tipoInscripcion) {
-        Connection conn = getConnect();
 
         String query = "INSERT INTO inscripcion (codigoEvento, idParticipante, tipoInscripcion) "
                 + "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?)";
 
-        try (PreparedStatement pstm = conn.prepareStatement(query)) {
+        try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
             pstm.setString(1, codigoEvento);
             pstm.setString(2, correoParticipante);
             pstm.setString(3, tipoInscripcion);
 
             int filas = pstm.executeUpdate();
-            return filas > 0; 
+            return filas > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
@@ -42,53 +40,24 @@ public class RegistroInscripcion extends ConectarDBA{
         }
     }
 
-    public void mostrarParticipantes(JComboBox<String> correo) {
+    public boolean validarInscripcion(String correoParticipante, String codigoEvento) {
+        String query = "SELECT COUNT(*) "
+                + "FROM pago p "
+                + "INNER JOIN registro_participante rp ON p.idParticipante = rp.idParticipante "
+                + "WHERE rp.Correo = ? AND p.codigoEvento = ?";
 
-        Connection conn = getConnect();
+        try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
+            pstm.setString(1, correoParticipante);
+            pstm.setString(2, codigoEvento);
 
-        correo.removeAllItems();
-        correo.addItem("Seleccionar Correo");
-
-        String query = "SELECT Correo FROM registro_participante";
-        System.out.println(query);
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                correo.addItem(rs.getString("Correo"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void mostrarEventos(JComboBox<String> evento) {
-        Connection conn = getConnect();
-
-        evento.removeAllItems();
-        evento.addItem("Seleccionar Evento");
-
-        String query = "SELECT Codigo FROM registro_evento";
-
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                evento.addItem(rs.getString("Codigo"));
+            ResultSet rs = pstm.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0; 
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-    }
-    
-    
-    public boolean validarInscripcion(String correo, String codigoEvento){
-        
-        Connection conn = getConnect();
         return false;
-        
     }
 
 }

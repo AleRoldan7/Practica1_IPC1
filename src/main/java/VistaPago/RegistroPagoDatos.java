@@ -5,6 +5,7 @@
 package VistaPago;
 
 import ControladorPago.RegistroPago;
+import DatosParticipanteEventos.ControladorGeneral;
 import javax.swing.JOptionPane;
 
 /**
@@ -14,12 +15,13 @@ import javax.swing.JOptionPane;
 public class RegistroPagoDatos extends javax.swing.JInternalFrame {
 
     private RegistroPago registroPago;
-
+    private ControladorGeneral controladorGeneral = new ControladorGeneral();
+    
     public RegistroPagoDatos() {
         initComponents();
         registroPago = new RegistroPago();
-        registroPago.mostrarParticipantes(jComboCorreo);
-        registroPago.mostrarEventos(jComboEvento);
+        controladorGeneral.mostrarEventos(jComboEvento);
+        controladorGeneral.mostrarParticipantes(jComboCorreo);
     }
 
     public void registrarPago() {
