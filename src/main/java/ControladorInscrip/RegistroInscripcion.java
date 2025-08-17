@@ -42,46 +42,6 @@ public class RegistroInscripcion extends ConectarDBA{
         }
     }
 
-    public void mostrarParticipantes(JComboBox<String> correo) {
-
-        Connection conn = getConnect();
-
-        correo.removeAllItems();
-        correo.addItem("Seleccionar Correo");
-
-        String query = "SELECT Correo FROM registro_participante";
-        System.out.println(query);
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                correo.addItem(rs.getString("Correo"));
-            }
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    public void mostrarEventos(JComboBox<String> evento) {
-        Connection conn = getConnect();
-
-        evento.removeAllItems();
-        evento.addItem("Seleccionar Evento");
-
-        String query = "SELECT Codigo FROM registro_evento";
-
-        try (PreparedStatement pstm = conn.prepareStatement(query); ResultSet rs = pstm.executeQuery()) {
-
-            while (rs.next()) {
-
-                evento.addItem(rs.getString("Codigo"));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-    }
     
     
     public boolean validarInscripcion(String correo, String codigoEvento){
