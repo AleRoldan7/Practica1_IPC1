@@ -6,7 +6,6 @@ package Inicio;
 
 import ConexionDBA.ConectarDBA;
 import VistaGeneral.FrameGeneral;
-import java.time.LocalTime;
 
 /**
  *
