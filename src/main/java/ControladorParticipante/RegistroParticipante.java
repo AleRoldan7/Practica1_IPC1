@@ -8,33 +8,29 @@ import ConexionDBA.ConectarDBA;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.regex.Pattern;
 
 /**
  *
  * @author alejandro
  */
-public class RegistroParticipante {
-    
-    private ConectarDBA connection;
+public class RegistroParticipante extends ConectarDBA {
 
     public RegistroParticipante() {
-        connection = new ConectarDBA();
-        connection.connect();
+        super();
     }
 
     public void agregarParticipante(String nombre, String tipo, String institu, String correo) {
 
-        Connection conn = connection.getConnect();
-
+        
         String query = "INSERT INTO registro_participante (NombreParticipante, TipoParticipante, Institucion, Correo) VALUES (?,?,?,?)";
 
-        try (PreparedStatement pstm = conn.prepareStatement(query)) {
+        try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
 
             pstm.setString(1, nombre);
             pstm.setString(2, tipo);
             pstm.setString(3, institu);
             pstm.setString(4, correo);
-            
 
             int filas = pstm.executeUpdate();
 
