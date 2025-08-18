@@ -6,6 +6,7 @@ package VistaAsistencia;
 
 import ControladorAsistencia.RegistrarAsistencia;
 import DatosParticipanteEventos.ControladorGeneral;
+import ModelosEntidad.EntidadAsistencia;
 import javax.swing.JOptionPane;
 
 /**
@@ -21,14 +22,18 @@ public class RegistrarAsistenciaDatos extends javax.swing.JInternalFrame {
      */
     public RegistrarAsistenciaDatos() {
         initComponents();
+        registrarAsistencia = new RegistrarAsistencia();
         controladorGeneral.mostrarActividad(jComboActividad);
         controladorGeneral.mostrarParticipantes(jComboCorreo);
     }
 
     public void confirmarAsistencia(){
+        String correo = jComboCorreo.getSelectedItem().toString();
+        String codigo = jComboActividad.getSelectedItem().toString();
         
-        boolean confirmar =registrarAsistencia.agregarAsistencia(jComboCorreo.getSelectedItem().toString(), 
-                jComboActividad.getSelectedItem().toString());
+        EntidadAsistencia entidadAsistencia = new EntidadAsistencia(correo, codigo);
+        
+        boolean confirmar = registrarAsistencia.agregarAsistencia(entidadAsistencia);
         
         if (confirmar) {
             JOptionPane.showMessageDialog(this, "Si tiene asistencia");

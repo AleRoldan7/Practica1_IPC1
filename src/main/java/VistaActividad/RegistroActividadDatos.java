@@ -7,6 +7,7 @@ package VistaActividad;
 import ControladorActividad.RegistrarActividad;
 import ControladorActividad.TipoCharla;
 import DatosParticipanteEventos.ControladorGeneral;
+import ModelosEntidad.EntidadActividad;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
@@ -37,56 +38,90 @@ public class RegistroActividadDatos extends javax.swing.JInternalFrame {
     }
 
     public void agregarActividad() {
-        if (jTextCodigo.getText().isBlank() || jComboEvento.getSelectedIndex() == 0
-                || jComboActividad.getSelectedIndex() == 0 || jTextTitulo.getText().isBlank()
-                || jComboCorreo.getSelectedIndex() == 0 || jTextInicio.getText().isBlank()
-                || jTextFin.getText().isBlank() || jTextCupo.getText().isBlank()) {
-            JOptionPane.showMessageDialog(this, "Llenar todos los campos o es una participante asistente");
+        // 1. Validar campos vacíos
+        if (jTextCodigo.getText().isBlank()
+                || jComboEvento.getSelectedIndex() == 0
+                || jComboActividad.getSelectedIndex() == 0
+                || jTextTitulo.getText().isBlank()
+                || jComboCorreo.getSelectedIndex() == 0
+                || jTextInicio.getText().isBlank()
+                || jTextFin.getText().isBlank()
+                || jTextCupo.getText().isBlank()) {
+            JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
             return;
         }
 
+        // Validar código de actividad: formato ACT-XXXXXXXX
+        String codigoActividad = jTextCodigo.getText().trim();
+        if (!codigoActividad.matches("^ACT-\\d{8}$")) {
+            JOptionPane.showMessageDialog(this, "Código de actividad inválido. Formato: ACT-00000000");
+            jTextCodigo.requestFocus();
+            return;
+        }
+
+        // 2. Validar código de actividad (opcional: ABC-00000000)
+        String codigo = jTextCodigo.getText().trim();
+        if (!codigo.matches("^[A-Z]{3}-\\d{8}$")) {
+            JOptionPane.showMessageDialog(this, "Código de actividad inválido. Formato: ABC-00000000");
+            jTextCodigo.requestFocus();
+            return;
+        }
+
+        // 3. Validar horas
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
         LocalTime horaInicio, horaFin;
         try {
-            horaInicio = LocalTime.parse(jTextInicio.getText(), formatter);
-            horaFin = LocalTime.parse(jTextFin.getText(), formatter);
+            horaInicio = LocalTime.parse(jTextInicio.getText().trim(), formatter);
+            horaFin = LocalTime.parse(jTextFin.getText().trim(), formatter);
         } catch (DateTimeParseException e) {
-            JOptionPane.showMessageDialog(this, "Formato de hora no valido");
+            JOptionPane.showMessageDialog(this, "Formato de hora no válido. Use HH:mm");
             return;
         }
 
         if (!horaInicio.isBefore(horaFin)) {
-            JOptionPane.showMessageDialog(this, "La hora de inicio esta mal");
+            JOptionPane.showMessageDialog(this, "La hora de inicio debe ser menor que la hora de fin");
             return;
         }
 
+        // 4. Validar cupo
         int cupo;
         try {
-            cupo = Integer.parseInt(jTextCupo.getText());
+            cupo = Integer.parseInt(jTextCupo.getText().trim());
             if (cupo <= 0) {
-                JOptionPane.showMessageDialog(this, "El cupo solo puede ser positivo");
+                JOptionPane.showMessageDialog(this, "El cupo debe ser un número positivo");
                 return;
             }
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Cupo no valido");
+            JOptionPane.showMessageDialog(this, "Cupo inválido");
             return;
         }
 
-        boolean agrego = registrarActividad.agregarActividad(
-                jTextCodigo.getText().trim(),
+        // 5. Validar título
+        String titulo = jTextTitulo.getText().trim();
+        if (titulo.length() < 3) {
+            JOptionPane.showMessageDialog(this, "El título debe tener al menos 3 caracteres");
+            return;
+        }
+
+        // 6. Crear la entidad
+        EntidadActividad actividad = new EntidadActividad(
+                codigo,
                 jComboEvento.getSelectedItem().toString(),
-                jComboActividad.getSelectedItem().toString(),
-                jTextTitulo.getText().trim(),
+                TipoCharla.valueOf(jComboActividad.getSelectedItem().toString()),
+                titulo,
                 jComboCorreo.getSelectedItem().toString(),
                 horaInicio,
                 horaFin,
                 cupo
         );
 
+        // 7. Llamar al controlador
+        boolean agrego = registrarActividad.agregarActividad(actividad);
+
         if (agrego) {
-            JOptionPane.showMessageDialog(this, "Actividad Agregada");
+            JOptionPane.showMessageDialog(this, "Actividad agregada correctamente");
         } else {
-            JOptionPane.showMessageDialog(this, "No se pudo agregar");
+            JOptionPane.showMessageDialog(this, "No se pudo agregar la actividad");
         }
     }
 

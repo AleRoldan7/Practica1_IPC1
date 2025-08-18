@@ -6,45 +6,54 @@ package ControladorAsistencia;
 
 import ConexionDBA.ConectarDBA;
 import DatosParticipanteEventos.ControladorGeneral;
+import ModelosEntidad.EntidadAsistencia;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
  *
  * @author alejandro
  */
-public class RegistrarAsistencia extends ConectarDBA{
+public class RegistrarAsistencia extends ConectarDBA {
 
-    private ControladorGeneral controladorGeneral = new ControladorGeneral();
-    
-    
     public RegistrarAsistencia() {
         super();
+        connect();
     }
-    
-    public boolean agregarAsistencia(String correo, String codigoActividad){
-        
-        String queryAsistencia = "INSERT INTO asistencia (idParticipante, idActividad) "
-                + "VALUES (SELECT idParticipante FROM registro_participante WHERE Correo = ?,"
-                + "SELECT idActividad FROM registrar_actividad WHERE codigoActividad = ?)";
-        
-        try (PreparedStatement pstm = getConnect().prepareStatement(queryAsistencia)){
-            
-            pstm.setString(1, correo);
-            pstm.setString(2, codigoActividad);
-            
-            int fila = pstm.executeUpdate();
-            return fila > 0;
-            
+
+    public boolean agregarAsistencia(EntidadAsistencia entidadAsistencia) {
+
+        int idParticipante = -1;
+        String queryParticipante = "SELECT idParticipante FROM registro_participante WHERE Correo = ?";
+
+        try (PreparedStatement ps = getConnect().prepareStatement(queryParticipante)) {
+            ps.setString(1, entidadAsistencia.getIdParticipante());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                idParticipante = rs.getInt("idParticipante");
+            } else {
+                System.out.println("Participante no encontrado: " + entidadAsistencia.getIdParticipante());
+                return false;
+            }
         } catch (SQLException e) {
-            
             e.printStackTrace();
             return false;
         }
-        
+
+        String queryInsert = "INSERT IGNORE INTO asistencia (idParticipante, idActividad) VALUES (?, ?)";
+
+        try (PreparedStatement psInsert = getConnect().prepareStatement(queryInsert)) {
+            psInsert.setInt(1, idParticipante);
+            psInsert.setString(2, entidadAsistencia.getCodigoActividad());
+            int filas = psInsert.executeUpdate();
+            return filas > 0; 
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
-    
-    
-    
-    
+
 }
+
+

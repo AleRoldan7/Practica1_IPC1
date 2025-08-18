@@ -7,6 +7,7 @@ package VistaInscripcion;
 import ControladorInscrip.RegistroInscripcion;
 import ControladorInscrip.TipoInscripcion;
 import DatosParticipanteEventos.ControladorGeneral;
+import ModelosEntidad.EntidadInscripcion;
 import javax.swing.JOptionPane;
 
 /**
@@ -46,7 +47,8 @@ public class InscripcionDatos extends javax.swing.JInternalFrame {
         String correoParticipante = jComboCorreo.getSelectedItem().toString();
         String tipoParticipante = jComboTipoInscrip.getSelectedItem().toString();
 
-        boolean exito = regiInscripcion.agregarInscripcion(codigoEvento, correoParticipante, tipoParticipante);
+        EntidadInscripcion entidadInscripcion = new EntidadInscripcion(codigoEvento, correoParticipante, TipoInscripcion.valueOf(tipoParticipante));
+        boolean exito = regiInscripcion.agregarInscripcion(entidadInscripcion);
 
         if (exito) {
             JOptionPane.showMessageDialog(this, "Inscripción registrada correctamente");
