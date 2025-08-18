@@ -5,7 +5,9 @@
 package VistaPago;
 
 import ControladorPago.RegistroPago;
+import ControladorPago.TipoPago;
 import DatosParticipanteEventos.ControladorGeneral;
+import ModelosEntidad.EntidadPago;
 import javax.swing.JOptionPane;
 
 /**
@@ -22,19 +24,34 @@ public class RegistroPagoDatos extends javax.swing.JInternalFrame {
         registroPago = new RegistroPago();
         controladorGeneral.mostrarEventos(jComboEvento);
         controladorGeneral.mostrarParticipantes(jComboCorreo);
+        agregarTipoPago();
+    }
+    
+    private void agregarTipoPago(){
+        jComboTipoPago.removeAllItems();
+        jComboTipoPago.addItem("Seleccione Tipo Pago");
+        
+        for (TipoPago tipoPago : TipoPago.values()) {
+            jComboTipoPago.addItem(tipoPago.name());
+        }
     }
 
     public void registrarPago() {
-        boolean pagado = registroPago.pagoRegistrado(jComboCorreo.getSelectedItem().toString(), jComboEvento.getSelectedItem().toString(),
-                jComboTipoPago.getSelectedItem().toString(), jTextMonto.getText());
-
+        String correo = jComboCorreo.getSelectedItem().toString();
+        String evento = jComboEvento.getSelectedItem().toString();
+        String tipo = jComboTipoPago.getSelectedItem().toString();
+        double monto = Double.parseDouble(jTextMonto.getText());
+        
+        EntidadPago entidadPago = new EntidadPago(evento, correo, TipoPago.valueOf(tipo), monto);
+        
+        boolean pagado = registroPago.pagoRegistrado(entidadPago);
+        
         if (pagado) {
             JOptionPane.showMessageDialog(this, "Se realizo el pago");
         } else {
             JOptionPane.showMessageDialog(this, "No se completo el pago");
 
         }
-
     }
 
     @SuppressWarnings("unchecked")

@@ -5,6 +5,7 @@
 package ControladorInscrip;
 
 import ConexionDBA.ConectarDBA;
+import ModelosEntidad.EntidadInscripcion;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -19,17 +20,18 @@ public class RegistroInscripcion extends ConectarDBA {
 
     public RegistroInscripcion() {
         super();
+        connect();
     }
 
-    public boolean agregarInscripcion(String codigoEvento, String correoParticipante, String tipoInscripcion) {
+    public boolean agregarInscripcion(EntidadInscripcion entidadInscripcion) {
 
         String query = "INSERT INTO inscripcion (codigoEvento, idParticipante, tipoInscripcion) "
                 + "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?)";
 
         try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
-            pstm.setString(1, codigoEvento);
-            pstm.setString(2, correoParticipante);
-            pstm.setString(3, tipoInscripcion);
+            pstm.setString(1, entidadInscripcion.getCodigoEvento());
+            pstm.setString(2, entidadInscripcion.getIdParticipante());
+            pstm.setString(3, entidadInscripcion.getTipoInscripcion().name());
 
             int filas = pstm.executeUpdate();
             return filas > 0;

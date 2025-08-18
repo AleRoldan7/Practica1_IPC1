@@ -14,33 +14,48 @@ import java.sql.SQLException;
  */
 public class ConectarDBA {
 
-    private static final String URL = "jdbc:mysql://localhost:3306/Triforce";
-    private static final String USER = "root";
-    private static final String PASSWORD = "010418";
-
+    private final String URL = "jdbc:mysql://localhost:3306/Triforce";
+    private final String USER = "root";
+    private final String PASSWORD = "010418";
     private Connection connection;
 
     public ConectarDBA() {
         connect();
     }
-    
-    
-    
+
     public void connect() {
-        System.out.println("Conecto" + URL);
+        try {
+            if (connection == null || connection.isClosed()) {
+                connection = DriverManager.getConnection(URL, USER, PASSWORD);
+                System.out.println("Conectoooooo");
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("No conectoooo");
+        }
+    }
+
+    public Connection getConnect() {
 
         try {
-            connection = DriverManager.getConnection(URL, USER, PASSWORD);
-            System.out.println("Si conecto bien ");
+            if (connection == null || connection.isClosed()) {
+                connect();
+            }
         } catch (SQLException e) {
-            System.out.println("No conecto");
             e.printStackTrace();
         }
-
-    }
-    
-    public Connection getConnect(){
         return connection;
+    }
+
+    public void close() {
+        if (connection != null) {
+            try {
+                connection.close();
+                System.out.println("Se cerro conexion");
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
 }

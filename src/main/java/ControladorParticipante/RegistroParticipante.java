@@ -5,6 +5,7 @@
 package ControladorParticipante;
 
 import ConexionDBA.ConectarDBA;
+import ModelosEntidad.EntidadParticipante;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -18,31 +19,26 @@ public class RegistroParticipante extends ConectarDBA {
 
     public RegistroParticipante() {
         super();
+        connect();
     }
 
-    public void agregarParticipante(String nombre, String tipo, String institu, String correo) {
+    public boolean agregarParticipante(EntidadParticipante entidadParticipante) {
 
-        
-        String query = "INSERT INTO registro_participante (NombreParticipante, TipoParticipante, Institucion, Correo) VALUES (?,?,?,?)";
+        String queryParticipante = "INSERT INTO registro_participante (NombreParticipante, TipoParticipante, Institucion, Correo) VALUES (?,?,?,?)";
 
-        try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
+        try (PreparedStatement pstm = getConnect().prepareStatement(queryParticipante)) {
 
-            pstm.setString(1, nombre);
-            pstm.setString(2, tipo);
-            pstm.setString(3, institu);
-            pstm.setString(4, correo);
+            pstm.setString(1, entidadParticipante.getNombreParticipante());
+            pstm.setString(2, entidadParticipante.getTipoParticipante().name());
+            pstm.setString(3, entidadParticipante.getInstitucion());
+            pstm.setString(4, entidadParticipante.getCorreoParticipante());
 
             int filas = pstm.executeUpdate();
-
-            if (filas > 0) {
-                System.out.println("SI agrego datos");
-
-            } else {
-                System.out.println("No agrego nada");
-            }
+            return filas > 0;
 
         } catch (SQLException e) {
             e.printStackTrace();
+            return false;
         }
     }
 }

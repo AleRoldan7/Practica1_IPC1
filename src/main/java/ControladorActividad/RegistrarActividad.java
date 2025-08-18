@@ -5,6 +5,7 @@
 package ControladorActividad;
 
 import ConexionDBA.ConectarDBA;
+import ModelosEntidad.EntidadActividad;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -20,24 +21,25 @@ public class RegistrarActividad extends ConectarDBA {
 
     public RegistrarActividad() {
         super();
+        connect();
     }
 
-    public boolean agregarActividad(String codigoAct, String codigoEvento, String tipo, String titulo,
-            String correoPersona, LocalTime inicio, LocalTime fin, int maxCupo) {
+    public boolean agregarActividad(EntidadActividad entidadActividad) {
 
         int idParticipante = -1;
         String consultaParticipante = "SELECT p.idParticipante "
                 + "FROM registro_participante p "
                 + "INNER JOIN inscripcion i ON p.idParticipante = i.idParticipante "
                 + "WHERE p.Correo = ? AND i.tipoInscripcion <> 'ASISTENTE' AND i.codigoEvento = ?";
+        
         try (PreparedStatement ps = getConnect().prepareStatement(consultaParticipante)) {
-            ps.setString(1, correoPersona);
-            ps.setString(2, codigoEvento);
+            ps.setString(1, entidadActividad.getIdParticipante());
+            ps.setString(2, entidadActividad.getCodigoEvento());
             ResultSet resultado = ps.executeQuery();
             if (resultado.next()) {
                 idParticipante = resultado.getInt("idParticipante");
             } else {
-                System.out.println("Participante no válido o solo ASISTENTE: " + correoPersona);
+                System.out.println("Participante no válido o solo ASISTENTE: " + entidadActividad.getIdParticipante());
                 return false;
             }
         } catch (SQLException e) {
@@ -50,14 +52,14 @@ public class RegistrarActividad extends ConectarDBA {
                 + "VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (PreparedStatement psInsert = getConnect().prepareStatement(insertarActividad)) {
-            psInsert.setString(1, codigoAct);
-            psInsert.setString(2, codigoEvento);
-            psInsert.setString(3, tipo);
-            psInsert.setString(4, titulo);
+            psInsert.setString(1, entidadActividad.getCodigoActividad());
+            psInsert.setString(2, entidadActividad.getCodigoEvento());
+            psInsert.setString(3, entidadActividad.getTipoCharla().name());
+            psInsert.setString(4, entidadActividad.getTitulo());
             psInsert.setInt(5, idParticipante);
-            psInsert.setTime(6, Time.valueOf(inicio));
-            psInsert.setTime(7, Time.valueOf(fin));
-            psInsert.setInt(8, maxCupo);
+            psInsert.setTime(6, Time.valueOf(entidadActividad.getHoraInicio()));
+            psInsert.setTime(7, Time.valueOf(entidadActividad.getHoraFin()));
+            psInsert.setInt(8, entidadActividad.getCupoMaximo());
 
             int filas = psInsert.executeUpdate();
             return filas > 0;

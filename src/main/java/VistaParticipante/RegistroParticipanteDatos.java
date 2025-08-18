@@ -2,10 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/GUIForms/JInternalFrame.java to edit this template
  */
-
 package VistaParticipante;
 
 import ControladorParticipante.RegistroParticipante;
+import ControladorParticipante.TipoParticipante;
+import ModelosEntidad.EntidadParticipante;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -14,17 +16,77 @@ import ControladorParticipante.RegistroParticipante;
 public class RegistroParticipanteDatos extends javax.swing.JInternalFrame {
 
     private RegistroParticipante registro;
-    
+
     public RegistroParticipanteDatos() {
         initComponents();
         registro = new RegistroParticipante();
     }
 
-    public void agregarDatos(){
-        String opcionCombo = jComboBox1.getSelectedItem().toString();
-        registro.agregarParticipante(jTextNombre.getText(), opcionCombo, jTextInsti.getText(), jTextCorreo.getText());
+    private void agregarTipo() {
+        jComboBox1.removeAllItems();
+        jComboBox1.addItem("Seleccionar Tipo");
+
+        for (TipoParticipante tipoParticipante : TipoParticipante.values()) {
+            jComboBox1.addItem(tipoParticipante.name());
+        }
     }
-    
+
+    private boolean validarCampos() {
+        String nombre = jTextNombre.getText().trim();
+        String intitucion = jTextInsti.getText().trim();
+        String correo = jTextCorreo.getText().trim();
+        int tipoParticipante = jComboBox1.getSelectedIndex();
+
+        if (nombre.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El nombre es obligatorio");
+            return false;
+        }
+
+        if (tipoParticipante == 0) {
+            JOptionPane.showMessageDialog(this, "Seleccione un tipo de participante");
+            return false;
+        }
+
+        if (intitucion.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "La institución es obligatoria");
+            return false;
+        }
+
+        if (correo.isEmpty()) {
+            JOptionPane.showMessageDialog(this, "El correo es obligatorio");
+            return false;
+        }
+
+        String expresionCorreo = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
+        if (!correo.matches(expresionCorreo)) {
+            JOptionPane.showMessageDialog(this, "Ingrese un correo válido");
+            return false;
+        }
+
+        return true;
+    }
+
+    private void agregarDatos() {
+
+        if (!validarCampos()) {
+            return;
+        }
+
+        String nombre = jTextNombre.getText();
+        String intitucion = jTextInsti.getText();
+        String correo = jTextCorreo.getText();
+        String tipoParticipante = jComboBox1.getSelectedItem().toString();
+
+        EntidadParticipante entidadParticipante = new EntidadParticipante(nombre, TipoParticipante.valueOf(tipoParticipante), intitucion, correo);
+        boolean agregar = registro.agregarParticipante(entidadParticipante);
+
+        if (agregar) {
+            JOptionPane.showMessageDialog(this, "Participante agregado");
+        } else {
+            JOptionPane.showMessageDialog(this, "Error al agregar");
+        }
+    }
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

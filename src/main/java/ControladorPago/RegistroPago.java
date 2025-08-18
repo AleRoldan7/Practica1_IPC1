@@ -5,6 +5,7 @@
 package ControladorPago;
 
 import ConexionDBA.ConectarDBA;
+import ModelosEntidad.EntidadPago;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -21,9 +22,10 @@ public class RegistroPago extends ConectarDBA{
 
     public RegistroPago() {
         super();
+        connect();
     }
 
-    public boolean pagoRegistrado(String correoParticipante, String codigoEvento, String tipoPago, String monto) {
+    public boolean pagoRegistrado(EntidadPago entidadPago) {
         
 
         String queryPago = "INSERT INTO pago (codigoEvento, idParticipante, tipoPago, monto)" +
@@ -31,10 +33,10 @@ public class RegistroPago extends ConectarDBA{
         
         try (PreparedStatement pstm = getConnect().prepareStatement(queryPago)){
             
-            pstm.setString(1, codigoEvento);
-            pstm.setString(2, correoParticipante);
-            pstm.setString(3, tipoPago);
-            pstm.setString(4, monto);
+            pstm.setString(1, entidadPago.getCodigoEvento());
+            pstm.setString(2, entidadPago.getIdParticipante());
+            pstm.setString(3, entidadPago.getTipoPago().name());
+            pstm.setDouble(4, entidadPago.getMonto());
            
             int fila =  pstm.executeUpdate();
             return fila > 0;
