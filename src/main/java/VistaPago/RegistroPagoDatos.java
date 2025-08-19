@@ -4,9 +4,11 @@
  */
 package VistaPago;
 
+import ControladorInscrip.RegistroInscripcion;
 import ControladorPago.RegistroPago;
 import ControladorPago.TipoPago;
 import DatosParticipanteEventos.ControladorGeneral;
+import ModelosEntidad.EntidadInscripcion;
 import ModelosEntidad.EntidadPago;
 import javax.swing.JOptionPane;
 
@@ -18,7 +20,7 @@ public class RegistroPagoDatos extends javax.swing.JInternalFrame {
 
     private RegistroPago registroPago;
     private ControladorGeneral controladorGeneral = new ControladorGeneral();
-    
+
     public RegistroPagoDatos() {
         initComponents();
         registroPago = new RegistroPago();
@@ -26,31 +28,57 @@ public class RegistroPagoDatos extends javax.swing.JInternalFrame {
         controladorGeneral.mostrarParticipantes(jComboCorreo);
         agregarTipoPago();
     }
-    
-    private void agregarTipoPago(){
+
+    private void agregarTipoPago() {
         jComboTipoPago.removeAllItems();
         jComboTipoPago.addItem("Seleccione Tipo Pago");
-        
+
         for (TipoPago tipoPago : TipoPago.values()) {
             jComboTipoPago.addItem(tipoPago.name());
         }
     }
 
     public void registrarPago() {
-        String correo = jComboCorreo.getSelectedItem().toString();
-        String evento = jComboEvento.getSelectedItem().toString();
-        String tipo = jComboTipoPago.getSelectedItem().toString();
-        double monto = Double.parseDouble(jTextMonto.getText());
-        
-        EntidadPago entidadPago = new EntidadPago(evento, correo, TipoPago.valueOf(tipo), monto);
-        
-        boolean pagado = registroPago.pagoRegistrado(entidadPago);
-        
-        if (pagado) {
-            JOptionPane.showMessageDialog(this, "Se realizo el pago");
-        } else {
-            JOptionPane.showMessageDialog(this, "No se completo el pago");
+        try {
+            String correo = jComboCorreo.getSelectedItem().toString();
+            String evento = jComboEvento.getSelectedItem().toString();
+            String tipo = jComboTipoPago.getSelectedItem().toString();
+            double monto = Double.parseDouble(jTextMonto.getText());
 
+            if (correo.equals("Seleccionar Correo") || evento.equals("Seleccionar Evento")
+                    || tipo.equals("Seleccione Tipo Pago")) {
+                JOptionPane.showMessageDialog(this, "Seleccione todos los campos correctamente.");
+                return;
+            }
+
+            EntidadPago entidadPago = new EntidadPago(evento, correo, TipoPago.valueOf(tipo), monto);
+
+            RegistroPago registroPago = new RegistroPago();
+            boolean pagado = registroPago.registrarPago(entidadPago); // tu método corregido
+
+            if (pagado) {
+                JOptionPane.showMessageDialog(this, "✅ Pago registrado correctamente.");
+
+                // Validar inscripción inmediatamente después del pago
+                RegistroInscripcion registroInscripcion = new RegistroInscripcion();
+                EntidadInscripcion entidadInscripcion = new EntidadInscripcion(evento, correo, null);
+                boolean inscripcionValida = registroInscripcion.validarInscripcion(entidadInscripcion);
+
+                if (inscripcionValida) {
+                    JOptionPane.showMessageDialog(this, "✅ Inscripción validada automáticamente.");
+                } else {
+                    JOptionPane.showMessageDialog(this, "⚠ No se pudo validar la inscripción automáticamente.");
+                }
+
+            } else {
+                JOptionPane.showMessageDialog(this, "❌ No se completó el pago. Puede que ya exista un registro.");
+            }
+
+        } catch (NumberFormatException e) {
+            JOptionPane.showMessageDialog(this, "Ingrese un monto válido.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(this, "Error al procesar el pago.");
         }
     }
 

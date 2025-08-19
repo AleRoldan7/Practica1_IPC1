@@ -12,9 +12,10 @@ public class EntidadAsistencia {
     
     private String idParticipante;
     private String codigoActividad;
+    private String correoParticipante;
 
-    public EntidadAsistencia(String idParticipante, String codigoActividad) {
-        this.idParticipante = idParticipante;
+    public EntidadAsistencia(String correoParticipante, String codigoActividad) {
+        this.correoParticipante = correoParticipante;
         this.codigoActividad = codigoActividad;
     }
 
@@ -33,6 +34,15 @@ public class EntidadAsistencia {
     public void setCodigoActividad(String codigoActividad) {
         this.codigoActividad = codigoActividad;
     }
+
+    public String getCorreoParticipante() {
+        return correoParticipante;
+    }
+
+    public void setCorreoParticipante(String correoParticipante) {
+        this.correoParticipante = correoParticipante;
+    }
+    
     
     
 }

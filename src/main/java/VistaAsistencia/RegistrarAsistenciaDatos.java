@@ -5,6 +5,7 @@
 package VistaAsistencia;
 
 import ControladorAsistencia.RegistrarAsistencia;
+import ControladorAsistencia.ValidarAsistencia;
 import DatosParticipanteEventos.ControladorGeneral;
 import ModelosEntidad.EntidadAsistencia;
 import javax.swing.JOptionPane;
@@ -17,6 +18,7 @@ public class RegistrarAsistenciaDatos extends javax.swing.JInternalFrame {
 
     private ControladorGeneral controladorGeneral = new ControladorGeneral();
     private RegistrarAsistencia registrarAsistencia;
+    private ValidarAsistencia validarAsistencia;
 
     /**
      * Creates new form RegistrarAsistenciaDatos
@@ -24,6 +26,7 @@ public class RegistrarAsistenciaDatos extends javax.swing.JInternalFrame {
     public RegistrarAsistenciaDatos() {
         initComponents();
         registrarAsistencia = new RegistrarAsistencia();
+        validarAsistencia = new ValidarAsistencia();
         controladorGeneral.mostrarActividad(jComboActividad);
         controladorGeneral.mostrarParticipantes(jComboCorreo);
     }
@@ -44,6 +47,25 @@ public class RegistrarAsistenciaDatos extends javax.swing.JInternalFrame {
             }
         } else {
             JOptionPane.showMessageDialog(this, "No se pudo registrar la asistencia. Verifique los datos.");
+        }
+    }
+
+    public void validarAsisitencia() {
+        try {
+            // 📌 Aquí obtienes el participante y la actividad seleccionada
+            int idParticipante = controladorGeneral.obtenerIdParticipante(jComboCorreo.getSelectedItem().toString());
+            int idActividad = controladorGeneral.obtenerIdActividad(jComboActividad.getSelectedItem().toString());
+
+            // 📌 Usamos la clase ValidarAsistencia
+            boolean registroExitoso = validarAsistencia.registrarAsistencia(idParticipante, idActividad);
+
+            if (registroExitoso) {
+                JOptionPane.showMessageDialog(this, "✅ Asistencia registrada correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "⚠️ No se pudo registrar la asistencia. Verifique condiciones (encargado, cupo o ya inscrito).");
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "❌ Error al procesar: " + e.getMessage());
         }
     }
 
@@ -125,7 +147,7 @@ public class RegistrarAsistenciaDatos extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        confirmarAsistencia();
+        validarAsisitencia();
     }//GEN-LAST:event_jButton1ActionPerformed
 
 

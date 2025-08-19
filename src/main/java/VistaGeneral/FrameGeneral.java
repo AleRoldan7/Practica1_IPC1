@@ -13,6 +13,7 @@ import VistaInscripcion.InscripcionDatos;
 import VistaPago.RegistroPagoDatos;
 import VistaPago.ValidarInscripcion;
 import VistaParticipante.RegistroParticipanteDatos;
+import VistaReportes.GenerarCertificado;
 import VistaReportes.GenerarReportes;
 import javax.swing.JOptionPane;
 
@@ -53,6 +54,7 @@ public class FrameGeneral extends javax.swing.JFrame {
         jMenuItemAsistencia = new javax.swing.JMenuItem();
         jMenuReportes = new javax.swing.JMenu();
         jMenuItemReportes = new javax.swing.JMenuItem();
+        jMenuItem2 = new javax.swing.JMenuItem();
 
         jMenu1.setText("jMenu1");
 
@@ -177,6 +179,14 @@ public class FrameGeneral extends javax.swing.JFrame {
         });
         jMenuReportes.add(jMenuItemReportes);
 
+        jMenuItem2.setText("Certificado");
+        jMenuItem2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem2ActionPerformed(evt);
+            }
+        });
+        jMenuReportes.add(jMenuItem2);
+
         jMenuBar1.add(jMenuReportes);
 
         setJMenuBar(jMenuBar1);
@@ -248,6 +258,10 @@ public class FrameGeneral extends javax.swing.JFrame {
        jDesktopPane1.add(new CargarArchivo()).setVisible(true);
     }//GEN-LAST:event_jMenuItem1ActionPerformed
 
+    private void jMenuItem2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem2ActionPerformed
+        jDesktopPane1.add(new GenerarCertificado()).setVisible(true);
+    }//GEN-LAST:event_jMenuItem2ActionPerformed
+
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JDesktopPane jDesktopPane1;
@@ -257,6 +271,7 @@ public class FrameGeneral extends javax.swing.JFrame {
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenu jMenuInscripcion;
     private javax.swing.JMenuItem jMenuItem1;
+    private javax.swing.JMenuItem jMenuItem2;
     private javax.swing.JMenuItem jMenuItemActividad;
     private javax.swing.JMenuItem jMenuItemAsistencia;
     private javax.swing.JMenuItem jMenuItemEvento;

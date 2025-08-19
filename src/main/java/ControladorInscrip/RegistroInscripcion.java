@@ -25,12 +25,18 @@ public class RegistroInscripcion extends ConectarDBA {
 
     public boolean agregarInscripcion(EntidadInscripcion entidadInscripcion) {
 
-        String query = "INSERT INTO inscripcion (codigoEvento, idParticipante, tipoInscripcion) "
-                + "VALUES (?, (SELECT idParticipante FROM registro_participante WHERE Correo = ?), ?)";
+        int idParticipante = obtenerIdParticipante(entidadInscripcion.getCorreoParticipante());
+        if (idParticipante == -1) {
+            System.out.println("❌ Participante no encontrado: " + entidadInscripcion.getCorreoParticipante());
+            return false;
+        }
+
+        String query = "INSERT INTO inscripcion (codigoEvento, idParticipante, tipoInscripcion, inscripcionValida) "
+                + "VALUES (?, ?, ?, 0)"; 
 
         try (PreparedStatement pstm = getConnect().prepareStatement(query)) {
             pstm.setString(1, entidadInscripcion.getCodigoEvento());
-            pstm.setString(2, entidadInscripcion.getCorreoParticipante());
+            pstm.setInt(2, idParticipante);
             pstm.setString(3, entidadInscripcion.getTipoInscripcion().name());
 
             int filas = pstm.executeUpdate();
@@ -43,32 +49,48 @@ public class RegistroInscripcion extends ConectarDBA {
     }
 
     public boolean validarInscripcion(EntidadInscripcion entidadInscripcion) {
-        String queryValidar = "SELECT rp.idParticipante "
-                + "FROM pago p "
-                + "INNER JOIN registro_participante rp ON p.idParticipante = rp.idParticipante "
-                + "WHERE rp.Correo = ? AND p.codigoEvento = ?";
+        int idParticipante = obtenerIdParticipante(entidadInscripcion.getCorreoParticipante());
+        if (idParticipante == -1) {
+            return false;
+        }
+
+        String queryValidar = "SELECT 1 FROM pago WHERE idParticipante = ? AND codigoEvento = ?";
 
         try (PreparedStatement pstm = getConnect().prepareStatement(queryValidar)) {
-            pstm.setString(1, entidadInscripcion.getCorreoParticipante()); 
+            pstm.setInt(1, idParticipante);
             pstm.setString(2, entidadInscripcion.getCodigoEvento());
 
             ResultSet rs = pstm.executeQuery();
             if (rs.next()) {
-                int idParticipante = rs.getInt("idParticipante");
-
-                String update = "UPDATE inscripcion SET inscripcionValida = 1 WHERE codigoEvento = ? AND idParticipante = ?";
+                String update = "UPDATE inscripcion SET inscripcionValida = 1 "
+                        + "WHERE idParticipante = ? AND codigoEvento = ?";
                 try (PreparedStatement psUpdate = getConnect().prepareStatement(update)) {
-                    psUpdate.setString(1, entidadInscripcion.getCodigoEvento());
-                    psUpdate.setInt(2, idParticipante);
+                    psUpdate.setInt(1, idParticipante);
+                    psUpdate.setString(2, entidadInscripcion.getCodigoEvento());
                     psUpdate.executeUpdate();
                 }
+                return true;
+            }
 
-                return true; 
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return false;
+    }
+
+    private int obtenerIdParticipante(String correo) {
+        String query = "SELECT idParticipante FROM registro_participante WHERE Correo = ?";
+        try (PreparedStatement ps = getConnect().prepareStatement(query)) {
+            ps.setString(1, correo);
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("idParticipante");
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return false; 
+        return -1; 
     }
 
 }

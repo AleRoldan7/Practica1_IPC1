@@ -23,10 +23,10 @@ public class RegistrarAsistencia extends ConectarDBA {
     }
 
     public boolean registrarAsistencia(EntidadAsistencia entidadAsistencia) {
-        
-        int idParticipante = obtenerIdParticipante(entidadAsistencia.getIdParticipante());
+
+        int idParticipante = obtenerIdParticipante(entidadAsistencia.getCorreoParticipante());
         if (idParticipante == -1) {
-            System.out.println("Participante no encontrado: " + entidadAsistencia.getIdParticipante());
+            System.out.println("❌ Participante no encontrado: " + entidadAsistencia.getCorreoParticipante());
             return false;
         }
 
@@ -38,9 +38,9 @@ public class RegistrarAsistencia extends ConectarDBA {
             ps.setString(2, entidadAsistencia.getCodigoActividad());
             int filas = ps.executeUpdate();
             if (filas > 0) {
-                System.out.println("Asistencia registrada correctamente.");
+                System.out.println("✅ Asistencia registrada correctamente.");
             } else {
-                System.out.println("El participante ya tenía registrada la asistencia.");
+                System.out.println("⚠ El participante ya tenía registrada la asistencia.");
             }
             return filas > 0;
         } catch (SQLException e) {
@@ -49,7 +49,6 @@ public class RegistrarAsistencia extends ConectarDBA {
         }
     }
 
-    
     private int obtenerIdParticipante(String correo) {
         String query = "SELECT idParticipante FROM registro_participante WHERE Correo = ?";
         try (PreparedStatement ps = getConnect().prepareStatement(query)) {
@@ -61,11 +60,11 @@ public class RegistrarAsistencia extends ConectarDBA {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -1; 
+        return -1;
     }
 
     public boolean validarAsistencia(EntidadAsistencia entidadAsistencia) {
-        int idParticipante = obtenerIdParticipante(entidadAsistencia.getIdParticipante());
+        int idParticipante = obtenerIdParticipante(entidadAsistencia.getCorreoParticipante());
         if (idParticipante == -1) {
             return false;
         }
@@ -79,11 +78,12 @@ public class RegistrarAsistencia extends ConectarDBA {
             ps.setString(2, entidadAsistencia.getCodigoActividad());
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                return rs.getInt(1) > 0; 
+                return rs.getInt(1) > 0;
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
     }
+
 }
