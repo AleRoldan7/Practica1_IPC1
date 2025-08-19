@@ -4,6 +4,7 @@
  */
 package VistaCargarArchivo;
 
+import ControladorArchivo.LeerArchivo;
 import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
@@ -32,12 +33,19 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
         int resultado = fileChooser.showOpenDialog(this);
 
         if (resultado == JFileChooser.APPROVE_OPTION) {
-            archivoSeleccionado = fileChooser.getSelectedFile();
-            //lblRutaArchivo.setText("Archivo seleccionado: " + archivoSeleccionado.getAbsolutePath());
 
-            JOptionPane.showMessageDialog(this,
-                    "Archivo seleccionado correctamente: " + archivoSeleccionado.getName(),
-                    "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            try {
+                int tiempo = Integer.parseInt(jTextFieldTiempo.getText());
+                archivoSeleccionado = fileChooser.getSelectedFile();
+                //lblRutaArchivo.setText("Archivo seleccionado: " + archivoSeleccionado.getAbsolutePath());
+                LeerArchivo.leerLineas(archivoSeleccionado.getAbsolutePath(), tiempo, jTextFieldConsola);
+                JOptionPane.showMessageDialog(this,
+                        "Archivo seleccionado correctamente: " + archivoSeleccionado.getName(),
+                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } else {
             //lblRutaArchivo.setText("Selección cancelada");
         }
@@ -50,6 +58,8 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
         jMenu1 = new javax.swing.JMenu();
         jLabel1 = new javax.swing.JLabel();
         jButton1 = new javax.swing.JButton();
+        jTextFieldTiempo = new javax.swing.JTextField();
+        jTextFieldConsola = new javax.swing.JTextField();
 
         jMenu1.setText("jMenu1");
 
@@ -78,16 +88,25 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
                         .addComponent(jLabel1))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(66, 66, 66)
-                        .addComponent(jButton1)))
-                .addContainerGap(352, Short.MAX_VALUE))
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jTextFieldConsola, javax.swing.GroupLayout.PREFERRED_SIZE, 841, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jButton1)
+                                .addGap(144, 144, 144)
+                                .addComponent(jTextFieldTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))))
+                .addContainerGap(65, Short.MAX_VALUE))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addComponent(jLabel1)
                 .addGap(64, 64, 64)
-                .addComponent(jButton1)
-                .addGap(0, 249, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(jButton1)
+                    .addComponent(jTextFieldTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(78, 78, 78)
+                .addComponent(jTextFieldConsola, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(0, 77, Short.MAX_VALUE))
         );
 
         pack();
@@ -102,5 +121,7 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JMenu jMenu1;
+    private javax.swing.JTextField jTextFieldConsola;
+    private javax.swing.JTextField jTextFieldTiempo;
     // End of variables declaration//GEN-END:variables
 }
