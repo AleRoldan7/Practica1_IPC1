@@ -24,7 +24,6 @@ public class ValidarAsistencia extends ConectarDBA {
     public boolean registrarAsistencia(int idParticipante, int idActividad) {
         try (Connection conn = getConnect()) {
 
-            // 1. Verificar que no sea el encargado de la actividad
             String encargadoQuery = "SELECT rp.Correo AS correoEncargado "
                     + "FROM registrar_actividad ra "
                     + "INNER JOIN registro_participante rp ON ra.idParticipante = rp.idParticipante "
@@ -43,7 +42,6 @@ public class ValidarAsistencia extends ConectarDBA {
                 }
             }
 
-            // 2. Verificar si ya está inscrito
             String existeQuery = "SELECT 1 FROM asistencia WHERE idParticipante = ? AND idActividad = ?";
             try (PreparedStatement ps = conn.prepareStatement(existeQuery)) {
                 ps.setInt(1, idParticipante);
@@ -55,7 +53,6 @@ public class ValidarAsistencia extends ConectarDBA {
                 }
             }
 
-            // 3. Verificar el cupo
             String cupoQuery = "SELECT cupoMaximo FROM registrar_actividad WHERE idActividad = ?";
             int cupoMaximo = 0;
             try (PreparedStatement ps = conn.prepareStatement(cupoQuery)) {
@@ -81,7 +78,6 @@ public class ValidarAsistencia extends ConectarDBA {
                 return false;
             }
 
-            // 4. Insertar en asistencia
             String insert = "INSERT INTO asistencia (idParticipante, idActividad) VALUES (?, ?)";
             try (PreparedStatement ps = conn.prepareStatement(insert)) {
                 ps.setInt(1, idParticipante);
@@ -98,7 +94,6 @@ public class ValidarAsistencia extends ConectarDBA {
         }
     }
 
-    // Método auxiliar para obtener el correo del participante
     private String getCorreoParticipante(int idParticipante, Connection conn) throws SQLException {
         String correo = "";
         String query = "SELECT Correo FROM registro_participante WHERE idParticipante = ?";
