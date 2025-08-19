@@ -17,7 +17,7 @@ public class Practica_IPC2 {
         
         ConectarDBA co = new ConectarDBA();
         co.connect();
-        FrameGeneral fr = new FrameGeneral();
+        FrameGeneral fr = new FrameGeneral(co);
         fr.setLocationRelativeTo(null);
         fr.setVisible(true);
         
