@@ -17,7 +17,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 public class CargarArchivo extends javax.swing.JInternalFrame {
 
     private File archivoSeleccionado;
-
+    private LeerArchivo leerArchivo = new LeerArchivo();
     /**
      * Creates new form CargarArchivo
      */
@@ -25,29 +25,35 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
         initComponents();
     }
 
-    private void abrirFileChooser() {
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle("Seleccionar archivo de entrada");
-        fileChooser.setFileFilter(new FileNameExtensionFilter("Archivos de texto (.txt)", "txt"));
+    private void seleccionarArchivo() {
+        JFileChooser selector = new JFileChooser();
+        selector.setDialogTitle("Seleccionar archivo de entrada");
+        selector.setFileFilter(new FileNameExtensionFilter("Archivos de texto (.txt)", "txt"));
 
-        int resultado = fileChooser.showOpenDialog(this);
+        int respuesta = selector.showOpenDialog(this);
 
-        if (resultado == JFileChooser.APPROVE_OPTION) {
-
+        if (respuesta == JFileChooser.APPROVE_OPTION) {
+            archivoSeleccionado = selector.getSelectedFile();
             try {
-                int tiempo = Integer.parseInt(jTextFieldTiempo.getText());
-                archivoSeleccionado = fileChooser.getSelectedFile();
-                //lblRutaArchivo.setText("Archivo seleccionado: " + archivoSeleccionado.getAbsolutePath());
-                LeerArchivo.leerLineas(archivoSeleccionado.getAbsolutePath(), tiempo, jTextFieldConsola);
+                int tiempoMilis = Integer.parseInt(jTextFieldTiempo.getText());
+                leerArchivo.leerArchivo(archivoSeleccionado.getAbsolutePath(), tiempoMilis, jTextFieldConsola);
+                
                 JOptionPane.showMessageDialog(this,
-                        "Archivo seleccionado correctamente: " + archivoSeleccionado.getName(),
-                        "Éxito", JOptionPane.INFORMATION_MESSAGE);
-            } catch (Exception e) {
-                e.printStackTrace();
+                        "Archivo cargado correctamente: " + archivoSeleccionado.getName(),
+                        "Éxito",
+                        JOptionPane.INFORMATION_MESSAGE);
+            } catch (NumberFormatException ex) {
+                JOptionPane.showMessageDialog(this,
+                        "El valor del tiempo debe ser un número entero",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+                JOptionPane.showMessageDialog(this,
+                        "Ocurrió un error al procesar el archivo",
+                        "Error",
+                        JOptionPane.ERROR_MESSAGE);
             }
-
-        } else {
-            //lblRutaArchivo.setText("Selección cancelada");
         }
     }
 
@@ -113,7 +119,7 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        abrirFileChooser();
+        seleccionarArchivo();
     }//GEN-LAST:event_jButton1ActionPerformed
 
 

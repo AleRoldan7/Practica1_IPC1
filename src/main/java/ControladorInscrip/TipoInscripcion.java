@@ -10,6 +10,6 @@ package ControladorInscrip;
  */
 public enum TipoInscripcion {
     
-    ASISTENTE, COFERENCISTA, TALLERISTA, OTRO;
+    ASISTENTE, CONFERENCISTA, TALLERISTA, OTRO;
     
 }

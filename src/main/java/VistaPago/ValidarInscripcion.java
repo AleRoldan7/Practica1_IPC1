@@ -5,7 +5,9 @@
 package VistaPago;
 
 import ControladorInscrip.RegistroInscripcion;
+import ControladorInscrip.TipoInscripcion;
 import DatosParticipanteEventos.ControladorGeneral;
+import ModelosEntidad.EntidadInscripcion;
 import javax.swing.JOptionPane;
 
 /**
@@ -25,9 +27,10 @@ public class ValidarInscripcion extends javax.swing.JInternalFrame {
     }
 
     public void valido() {
+        EntidadInscripcion entidadInscripcion = new EntidadInscripcion(jComboEvento.getSelectedItem().toString(), 
+                jComboCorreo.getSelectedItem().toString(), TipoInscripcion.CONFERENCISTA);
         
-        boolean exito = regiInscripcion.validarInscripcion(jComboCorreo.getSelectedItem().toString(), 
-                jComboEvento.getSelectedItem().toString());
+        boolean exito = regiInscripcion.validarInscripcion(entidadInscripcion);
         
         if (exito) {
             JOptionPane.showMessageDialog(this, "Inscripcion valida");

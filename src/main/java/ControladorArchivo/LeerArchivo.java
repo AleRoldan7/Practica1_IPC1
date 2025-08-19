@@ -1,12 +1,27 @@
 package ControladorArchivo;
 
+import ControladorActividad.RegistrarActividad;
+import ControladorActividad.TipoCharla;
+import ControladorAsistencia.RegistrarAsistencia;
 import ControladorEvento.RegistrarEvento;
 import ControladorEvento.TipoEvento;
+import ControladorInscrip.RegistroInscripcion;
+import ControladorInscrip.TipoInscripcion;
+import ControladorPago.RegistroPago;
+import ControladorPago.TipoPago;
+import ControladorParticipante.RegistroParticipante;
+import ControladorParticipante.TipoParticipante;
+import ModelosEntidad.EntidadActividad;
+import ModelosEntidad.EntidadAsistencia;
 import ModelosEntidad.EntidadEvento;
+import ModelosEntidad.EntidadInscripcion;
+import ModelosEntidad.EntidadPago;
+import ModelosEntidad.EntidadParticipante;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,134 +35,169 @@ import javax.swing.JTextField;
  *
  * @author alejandro
  */
-
-
 public class LeerArchivo {
 
-    // Método que lanza el hilo para leer instrucciones
-    public static void leerLineas(String rutaArchivo, int tiempo, JTextField textField) {
+    private final RegistrarEvento eventos = new RegistrarEvento();
+    private final RegistroParticipante participantes = new RegistroParticipante();
+    private final RegistroInscripcion inscripciones = new RegistroInscripcion();
+    private final RegistroPago pagos = new RegistroPago();
+    private final RegistrarActividad actividad = new RegistrarActividad();
+    private final RegistrarAsistencia asistencia = new RegistrarAsistencia();
+
+    public void leerArchivo(String ruta, int tiempo, JTextField textField) {
         Thread hilo = new Thread(() -> {
-            try (BufferedReader br = new BufferedReader(new FileReader(rutaArchivo))) {
+            try (BufferedReader br = new BufferedReader(new FileReader(ruta))) {
                 String linea;
                 while ((linea = br.readLine()) != null) {
                     linea = linea.trim();
                     if (!linea.isEmpty()) {
-                        procesarInstruccion(linea);
-                        // Actualizar el JTextField en el hilo de Swing (para no romper la GUI)
-                        final String lineaProcesada = linea;
-                        javax.swing.SwingUtilities.invokeLater(() -> {
-                            textField.setText(textField.getText() + "\nProcesando: " + lineaProcesada);
-                        });
-                        // Esperar el tiempo indicado
+                        procesarLinea(linea);
+
+                        final String lineaActual = linea;
+                        javax.swing.SwingUtilities.invokeLater(()
+                                -> textField.setText(textField.getText() + "Procesando: \n" + lineaActual)
+                        );
+
                         Thread.sleep(tiempo);
                     }
                 }
             } catch (IOException e) {
-                System.out.println("Error al leer el archivo: " + e.getMessage());
+                System.out.println("Error leyendo el archivo: " + e.getMessage());
             } catch (InterruptedException e) {
                 System.out.println("Ejecución interrumpida");
                 Thread.currentThread().interrupt();
             }
         });
-        hilo.start(); // Inicia el hilo
+        hilo.start();
     }
 
-    public static void procesarInstruccion(String linea) {
-        linea = linea.trim();
-
-        // Ignorar líneas vacías o comentarios
+    private void procesarLinea(String linea) {
         if (linea.isEmpty() || linea.startsWith("/*") || linea.startsWith("//")) {
             return;
         }
 
-        // Asegurarse que tenga paréntesis
-        int indiceParentesis = linea.indexOf("(");
-        if (indiceParentesis == -1) {
-            return; // No es una instrucción válida
+        int indice = linea.indexOf("(");
+        if (indice == -1) {
+            return;
         }
 
-        // Quitar el ; al final
         if (linea.endsWith(";")) {
             linea = linea.substring(0, linea.length() - 1);
         }
 
-        // Acción = lo que está antes del primer paréntesis
-        String accion = linea.substring(0, indiceParentesis).trim();
+        String accion = linea.substring(0, indice).trim();
+        String contenido = linea.substring(indice + 1, linea.lastIndexOf(")"));
+        List<String> datos = separarValores(contenido);
 
-        // Argumentos = lo que está entre los paréntesis
-        String datosBrutos = linea.substring(indiceParentesis + 1, linea.lastIndexOf(")"));
-        java.util.List<String> datos = separarDatos(datosBrutos);
-
-        // Procesar según la acción
         switch (accion) {
             case "REGISTRO_EVENTO":
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-                EntidadEvento entidadEvento = new EntidadEvento(
-                        datos.get(0), // código
-                        LocalDate.parse(datos.get(1), formatter), // fecha
-                        TipoEvento.valueOf(datos.get(2).toUpperCase()), // tipo evento
-                        datos.get(3), // título
-                        datos.get(4), // ubicación
-                        Integer.parseInt(datos.get(5)), // cupo máximo
-                        Double.parseDouble(datos.get(6)) // pago
+                DateTimeFormatter formato = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                EntidadEvento evento = new EntidadEvento(
+                        datos.get(0),
+                        LocalDate.parse(datos.get(1), formato),
+                        TipoEvento.valueOf(datos.get(2).toUpperCase()),
+                        datos.get(3),
+                        datos.get(4),
+                        Integer.parseInt(datos.get(5)),
+                        Double.parseDouble(datos.get(6))
                 );
-                RegistrarEvento registrarEvento = new RegistrarEvento();
-                registrarEvento.agregarEvento(entidadEvento);
-                System.out.println("Evento -> " + datos);
+                eventos.agregarEvento(evento);
+                System.out.println("Evento registrado: " + datos);
                 break;
+
             case "REGISTRO_PARTICIPANTE":
-                System.out.println("Participante -> " + datos);
+                EntidadParticipante participante = new EntidadParticipante(
+                        datos.get(0),
+                        TipoParticipante.valueOf(datos.get(1).toUpperCase()),
+                        datos.get(2),
+                        datos.get(3)
+                );
+                participantes.agregarParticipante(participante);
+                System.out.println("Participante registrado: " + datos);
                 break;
+
             case "INSCRIPCION":
-                System.out.println("Inscripción -> " + datos);
+                EntidadInscripcion inscripcion = new EntidadInscripcion(
+                        datos.get(0),
+                        datos.get(1),
+                        TipoInscripcion.valueOf(datos.get(2).toUpperCase())
+                );
+                inscripciones.agregarInscripcion(inscripcion);
+                System.out.println("Inscripción registrada: " + datos);
                 break;
+
             case "PAGO":
-                System.out.println("Pago -> " + datos);
+                EntidadPago pago = new EntidadPago(
+                        datos.get(0),
+                        datos.get(1),
+                        TipoPago.valueOf(datos.get(2).toUpperCase()),
+                        Double.parseDouble(datos.get(3))
+                );
+                pagos.pagoRegistrado(pago);
+                System.out.println("Pago registrado: " + datos);
                 break;
+
             case "VALIDAR_INSCRIPCION":
-                System.out.println("Validar inscripción -> " + datos);
+
+                System.out.println("Validar inscripción: " + datos);
                 break;
+
             case "REGISTRO_ACTIVIDAD":
-                System.out.println("Actividad -> " + datos);
+                DateTimeFormatter horaFormato = DateTimeFormatter.ofPattern("HH:mm");
+
+                EntidadActividad entidadActividad = new EntidadActividad(
+                        datos.get(0),
+                        datos.get(1),
+                        TipoCharla.valueOf(datos.get(2)),
+                        datos.get(3),
+                        datos.get(4),
+                        LocalTime.parse(datos.get(5), horaFormato),
+                        LocalTime.parse(datos.get(6), horaFormato),
+                        Integer.parseInt(datos.get(7))
+                );
+                actividad.agregarActividad(entidadActividad);
+                System.out.println("Actividad: " + datos);
                 break;
+
             case "ASISTENCIA":
-                System.out.println("Asistencia -> " + datos);
+                EntidadAsistencia entidadAsistencia = new EntidadAsistencia(datos.get(0), datos.get(1));
+                asistencia.registrarAsistencia(entidadAsistencia);
+                System.out.println("Asistencia: " + datos);
                 break;
+
             case "CERTIFICADO":
-                System.out.println("Certificado -> " + datos);
+                System.out.println("Certificado: " + datos);
                 break;
+
             case "REPORTE_PARTICIPANTES":
             case "REPORTE_ACTIVIDADES":
             case "REPORTE_EVENTOS":
-                System.out.println("Reporte -> " + accion + " " + datos);
+                System.out.println("Reporte solicitado: " + accion + " " + datos);
                 break;
+
             default:
                 System.out.println("Acción desconocida: " + accion);
         }
     }
 
-    private static List<String> separarDatos(String entrada) {
-        List<String> resultado = new ArrayList<>();
+    private List<String> separarValores(String entrada) {
+        List<String> lista = new ArrayList<>();
         StringBuilder actual = new StringBuilder();
         boolean dentroComillas = false;
 
         for (char c : entrada.toCharArray()) {
             if (c == '"') {
-                dentroComillas = !dentroComillas; // Cambia estado
-                actual.append(c);
+                dentroComillas = !dentroComillas;
             } else if (c == ',' && !dentroComillas) {
-                resultado.add(actual.toString().trim().replaceAll("^\"|\"$", ""));
+                lista.add(actual.toString().trim().replaceAll("^\"|\"$", ""));
                 actual.setLength(0);
-            } else {
-                actual.append(c);
+                continue;
             }
+            actual.append(c);
         }
-
-        // Añadir el último valor
         if (actual.length() > 0) {
-            resultado.add(actual.toString().trim().replaceAll("^\"|\"$", ""));
+            lista.add(actual.toString().trim().replaceAll("^\"|\"$", ""));
         }
-
-        return resultado;
+        return lista;
     }
 }

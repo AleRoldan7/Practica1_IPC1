@@ -17,6 +17,7 @@ public class RegistrarAsistenciaDatos extends javax.swing.JInternalFrame {
 
     private ControladorGeneral controladorGeneral = new ControladorGeneral();
     private RegistrarAsistencia registrarAsistencia;
+
     /**
      * Creates new form RegistrarAsistenciaDatos
      */
@@ -27,21 +28,25 @@ public class RegistrarAsistenciaDatos extends javax.swing.JInternalFrame {
         controladorGeneral.mostrarParticipantes(jComboCorreo);
     }
 
-    public void confirmarAsistencia(){
+    public void confirmarAsistencia() {
         String correo = jComboCorreo.getSelectedItem().toString();
-        String codigo = jComboActividad.getSelectedItem().toString();
-        
-        EntidadAsistencia entidadAsistencia = new EntidadAsistencia(correo, codigo);
-        
-        boolean confirmar = registrarAsistencia.agregarAsistencia(entidadAsistencia);
-        
-        if (confirmar) {
-            JOptionPane.showMessageDialog(this, "Si tiene asistencia");
+        String codigoActividad = jComboActividad.getSelectedItem().toString();
+
+        EntidadAsistencia entidad = new EntidadAsistencia(correo, codigoActividad);
+        boolean registroExitoso = registrarAsistencia.registrarAsistencia(entidad);
+        boolean asistio = registrarAsistencia.validarAsistencia(entidad);
+
+        if (asistio) {
+            if (registroExitoso) {
+                JOptionPane.showMessageDialog(this, "Asistencia registrada correctamente.");
+            } else {
+                JOptionPane.showMessageDialog(this, "El participante ya tenía registrada la asistencia.");
+            }
         } else {
-            JOptionPane.showMessageDialog(this, "No tiene asistencia");
+            JOptionPane.showMessageDialog(this, "No se pudo registrar la asistencia. Verifique los datos.");
         }
     }
-    
+
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

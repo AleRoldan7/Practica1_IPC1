@@ -13,12 +13,12 @@ import ControladorInscrip.TipoInscripcion;
 public class EntidadInscripcion {
     
     private String codigoEvento;
-    private String idParticipante;
+    private String correoParticipante;
     private TipoInscripcion tipoInscripcion;
 
-    public EntidadInscripcion(String codigoEvento, String idParticipante, TipoInscripcion tipoInscripcion) {
+    public EntidadInscripcion(String codigoEvento, String correoParticipante, TipoInscripcion tipoInscripcion) {
         this.codigoEvento = codigoEvento;
-        this.idParticipante = idParticipante;
+        this.correoParticipante = correoParticipante;
         this.tipoInscripcion = tipoInscripcion;
     }
 
@@ -30,13 +30,15 @@ public class EntidadInscripcion {
         this.codigoEvento = codigoEvento;
     }
 
-    public String getIdParticipante() {
-        return idParticipante;
+    public String getCorreoParticipante() {
+        return correoParticipante;
     }
 
-    public void setIdParticipante(String idParticipante) {
-        this.idParticipante = idParticipante;
+    public void setCorreoParticipante(String correoParticipante) {
+        this.correoParticipante = correoParticipante;
     }
+
+  
 
     public TipoInscripcion getTipoInscripcion() {
         return tipoInscripcion;
