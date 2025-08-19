@@ -1,0 +1,63 @@
+Script Base De Datos Practica1_IPC2
+
+CREATE DATABASE Triforce;
+
+USE Triforce;
+
+CREATE TABLE registro_evento(
+    -> Codigo VARCHAR(15) NOT NULL,
+    -> Fecha_Evento DATE NOT NULL,
+    -> Tipo_Evento VARCHAR(60) NOT NULL,
+    -> Titulo VARCHAR(100) NOT NULL,
+    -> Ubicacion VARCHAR(100) NOT NULL,
+    -> Cupo_Maximo INTEGER NOT NULL,
+    -> PRIMARY KEY (Codigo)
+    -> );
+
+CREATE TABLE registro_participante(
+    -> idParticipante INT NOT NULL AUTO_INCREMENT,
+    -> NombreParticipante VARCHAR(45) NOT NULL,
+    -> TipoParticipante ENUM ('PARTICIPANTE', 'INVITADO', 'PROFESIONAL') NOT NULL,
+    -> Institucion VARCHAR(149) NOT NULL,
+    -> Correo VARCHAR(40) NOT NULL,
+    -> CONSTRAINT pk_idParticipante PRIMARY KEY (idParticipante)
+    -> );
+
+CREATE TABLE inscripcion(idInscripcion INTEGER AUTO_INCREMENT, codigoEvento VARCHAR(15) NOT NULL, idParticipante INT NOT NULL, tipoInscripcion ENUM('ASISTENTE','CONFERENCISTA','TALLERISTA','OTRO') NOT NULL, CONSTRAINT pk_inscripcion PRIMARY KEY (idInscripcion), CONSTRAINT pk_inscripcionEvento FOREIGN KEY (codigoEvento) REFERENCES registro_evento(codigo), CONSTRAINT pk_inscripcionParticipante FOREIGN KEY (idParticipante) REFERENCES registro_participante(idParticipante));
+
+
+CREATE TABLE pago( idPago INTEGER AUTO_INCREMENT, codigoEvento VARCHAR(15) NOT NULL, idParticipante INT NOT NULL, tipoPago ENUM('EFECTIVO','TRANSFERENCIA','TARJETA') NOT NULL, monto DECIMAL(10,2) NOT NULL, CONSTRAINT pk_pago PRIMARY KEY (idPago), CONSTRAINT pk_PagoEvento FOREIGN KEY (codigoEvento) REFERENCES registro_evento(codigo), CONSTRAINT pk_pagoParticipante FOREI
+GN KEY (idParticipante) REFERENCES registro_participante(idParticipante) );
+
+
+CREATE TABLE registrar_actividad (
+    -> codigoActividad INT AUTO_INCREMENT,
+     codigoEvento VARCHAR(15) NOT NULL,
+     tipoActividad ENUM('CHARLA', 'TALLER', 'DEBATE', 'OTRA') NOT NULL,
+     tituloActividad VARCHAR(199) NOT NULL,
+     idParticipante INT NOT NULL,
+     horaInicio TIME NOT NULL,
+     horaFin TIME NOT NULL,
+     cupoMaximo INT NOT NULL,
+    -> CONSTRAINT pk_codigoActividad PRIMARY KEY (codigoActividad),
+    CONSTRAINT fk_actividadEvento FOREIGN KEY (codigoEvento) REFERENCES registro_evento(codigo),
+    CONSTRAINT fk_actividadPersona FOREIGN KEY (idParticipante) REFERENCES registro_participante(idParticipante)
+    -> );
+
+CREATE TABLE registrar_actividad(
+    ->      idActividad INT AUTO_INCREMENT,
+    ->     codigoActividad VARCHAR(15) NOT NULL,
+    ->     codigoEvento VARCHAR(15) NOT NULL,
+    ->     tipoActividad ENUM('CHARLA', 'TALLER', 'DEBATE', 'OTRA') NOT NULL,
+    ->     tituloActividad VARCHAR(199) NOT NULL,
+    ->     idParticipante INT NOT NULL,
+    ->     horaInicio TIME NOT NULL,
+    ->     horaFin TIME NOT NULL,
+    ->     cupoMaximo INT NOT NULL,
+    ->     CONSTRAINT pk_idActividad PRIMARY KEY (idActividad),
+    ->     CONSTRAINT fk_actividadEvento FOREIGN KEY (codigoEvento) REFERENCES registro_evento(codigo),
+    ->     CONSTRAINT fk_actividadPersona FOREIGN KEY (idParticipante) REFERENCES registro_participante(idParticipante)
+    -> );
+
+CREATE TABLE asistencia( idAsistencia INTEGER AUTO_INCREMENT, idParticipante INTEGER NOT NULL, idActividad INTEGER NOT NULL, CONSTRAINT pk_idAsistencia PRIMARY KEY (idAsistencia), CONSTRAINT fk_asistenciaParticipante FOREIGN KEY (idParticipante) REFERENCES registro_participante (idParticipante), CONSTRAINT fk_asistenciaActividad FOREIGN KEY (idActividad) REFERENCES registrar_actividad (idActividad) );
+
