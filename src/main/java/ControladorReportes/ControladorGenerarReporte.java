@@ -21,11 +21,10 @@ public class ControladorGenerarReporte extends ConectarDBA {
         super();
     }
 
-    public List<ReporteParticipante> reporteParticipantes(String codigoEvento, String tipo, String institucion) {
-
+    public List<ReporteParticipante> obtenerReporteParticipantes(String codigoEvento, String tipo, String institucion) {
         List<ReporteParticipante> lista = new ArrayList<>();
 
-        String queryReporteParticipante = "SELECT p.Correo AS Correo, "
+        String sql = "SELECT p.Correo AS Correo, "
                 + "i.tipoInscripcion AS Tipo, "
                 + "p.NombreParticipante AS NombreCompleto, "
                 + "p.Institucion AS Institucion, "
@@ -36,7 +35,7 @@ public class ControladorGenerarReporte extends ConectarDBA {
                 + "AND (? = '' OR i.tipoInscripcion = ?) "
                 + "AND (? = '' OR p.Institucion = ?)";
 
-        try (PreparedStatement ps = getConnect().prepareStatement(queryReporteParticipante)) {
+        try (PreparedStatement ps = getConnect().prepareStatement(sql)) {
             ps.setString(1, codigoEvento);
             ps.setString(2, codigoEvento);
             ps.setString(3, tipo);
@@ -54,7 +53,6 @@ public class ControladorGenerarReporte extends ConectarDBA {
                         rs.getBoolean("Validado")
                 ));
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -62,91 +60,111 @@ public class ControladorGenerarReporte extends ConectarDBA {
         return lista;
     }
 
-    public List<ReporteActividad> reporteActividades(String codigoEvento, String tipoActividad, String correoEncargado) {
+    public List<ReporteActividad> obtenerActividadesParaReporte(String codigoEvento, String tipoActividad, String correoEncargado) {
+        List<ReporteActividad> listaActividades = new ArrayList<>();
 
-        List<ReporteActividad> lista = new ArrayList<>();
-
-        String queryReporteActividad = "SELECT a.codigoActividad, a.codigoEvento, a.tituloActividad, CONCAT(p.Nombre,' ',p.Apellido) AS Encargado, "
-                + "a.horaInicio, a.cupoMaximo, COUNT(r.idParticipante) AS cantidadParticipantes "
+        String queryReporteActividades = "SELECT a.idActividad AS idAct, a.codigoEvento, a.tituloActividad, "
+                + "p.NombreParticipante AS nombreEncargado, a.horaInicio, a.cupoMaximo, "
+                + "COUNT(s.idParticipante) AS totalParticipantes "
                 + "FROM registrar_actividad a "
                 + "JOIN registro_participante p ON a.idParticipante = p.idParticipante "
-                + "LEFT JOIN asistencia r ON a.codigoActividad = r.codigoActividad "
-                + "WHERE a.codigoEvento = ? "
-                + "AND (? = '' OR a.tipoActividad = ?) "
-                + "AND (? = '' OR p.Correo = ?) "
-                + "GROUP BY a.codigoActividad";
-        try (PreparedStatement ps = getConnect().prepareStatement(queryReporteActividad)) {
-            ps.setString(1, codigoEvento);
-            ps.setString(2, tipoActividad);
-            ps.setString(3, tipoActividad);
-            ps.setString(4, correoEncargado);
-            ps.setString(5, correoEncargado);
+                + "LEFT JOIN asistencia s ON a.idActividad = s.idActividad "
+                + "WHERE a.codigoEvento = ?";
+
+        if (tipoActividad != null && !tipoActividad.isEmpty()) {
+            queryReporteActividades += " AND a.tipoActividad = ?";
+        }
+        if (correoEncargado != null && !correoEncargado.isEmpty()) {
+            queryReporteActividades += " AND p.Correo = ?";
+        }
+
+        queryReporteActividades += " GROUP BY a.idActividad, a.codigoEvento, a.tituloActividad, p.NombreParticipante, a.horaInicio, a.cupoMaximo";
+
+        try (PreparedStatement ps = getConnect().prepareStatement(queryReporteActividades)) {
+            int indice = 1;
+            ps.setString(indice++, codigoEvento);
+
+            if (tipoActividad != null && !tipoActividad.isEmpty()) {
+                ps.setString(indice++, tipoActividad);
+            }
+            if (correoEncargado != null && !correoEncargado.isEmpty()) {
+                ps.setString(indice++, correoEncargado);
+            }
 
             ResultSet rs = ps.executeQuery();
+
             while (rs.next()) {
-                lista.add(new ReporteActividad(
-                        rs.getString("codigoActividad"),
-                        rs.getString("codigoEvento"),
-                        rs.getString("tituloActividad"),
-                        rs.getString("Encargado"),
-                        rs.getString("horaInicio"),
-                        rs.getInt("cupoMaximo"),
-                        rs.getInt("cantidadParticipantes")
+                String idActividad = rs.getString("idAct");
+                String codigoEv = rs.getString("codigoEvento");
+                String titulo = rs.getString("tituloActividad");
+                String encargado = rs.getString("nombreEncargado");
+                String hora = rs.getString("horaInicio");
+                int cupo = rs.getInt("cupoMaximo");
+                int participantes = rs.getInt("totalParticipantes");
+
+                System.out.println("Actividad: " + idActividad + ", Evento: " + codigoEv
+                        + ", Título: " + titulo + ", Encargado: " + encargado
+                        + ", Hora: " + hora + ", Cupo: " + cupo
+                        + ", Participantes: " + participantes);
+
+                listaActividades.add(new ReporteActividad(
+                        idActividad, codigoEv, titulo, encargado, hora, cupo, participantes
                 ));
             }
 
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
         }
-        return lista;
+
+        return listaActividades;
     }
 
-    public List<ReporteEvento> reporteEventos(String tipoEvento, String fechaInicio, String fechaFin, Integer cupoMin, Integer cupoMax) {
+    public List<ReporteEvento> obtenerReporteEventos() {
 
         List<ReporteEvento> lista = new ArrayList<>();
 
-        String queryReporteEvento = "SELECT e.Codigo, e.Fecha_Evento, e.Titulo, e.Tipo_Evento, e.Ubicacion, e.Cupo_Maximo, "
-                + "p.Correo, CONCAT(p.Nombre,' ',p.Apellido) AS NombreParticipante, i.tipoInscripcion, pay.tipoPago, pay.monto "
+        String queryReporteEvento = "SELECT e.Codigo AS codigoEvento, e.Fecha_Evento AS fechaEvento, e.Titulo AS titulo, "
+                + "e.Tipo_Evento AS tipoEvento, e.Ubicacion AS ubicacion, e.Cupo_Maximo AS cupoMaximo, "
+                + "p.Correo AS correoParticipante, p.NombreParticipante AS nombreParticipante, "
+                + "p.TipoParticipante AS tipoParticipante, pay.tipoPago AS metodoPago, pay.monto AS monto "
                 + "FROM registro_evento e "
-                + "LEFT JOIN inscripcion i ON e.Codigo = i.codigoEvento AND i.inscripcionValida = 1 "
+                + "LEFT JOIN inscripcion i ON e.Codigo = i.codigoEvento "
                 + "LEFT JOIN registro_participante p ON i.idParticipante = p.idParticipante "
-                + "LEFT JOIN pago pay ON i.idParticipante = pay.idParticipante AND e.Codigo = pay.codigoEvento "
-                + "WHERE (? = '' OR e.Tipo_Evento = ?) "
-                + "AND (? = '' OR e.Fecha_Evento >= ?) "
-                + "AND (? = '' OR e.Fecha_Evento <= ?) "
-                + "AND (? IS NULL OR e.Cupo_Maximo >= ?) "
-                + "AND (? IS NULL OR e.Cupo_Maximo <= ?)";
+                + "LEFT JOIN pago pay ON i.idParticipante = pay.idParticipante AND e.Codigo = pay.codigoEvento";
+
         try (PreparedStatement ps = getConnect().prepareStatement(queryReporteEvento)) {
-            ps.setString(1, tipoEvento);
-            ps.setString(2, tipoEvento);
-            ps.setString(3, fechaInicio);
-            ps.setString(4, fechaInicio);
-            ps.setString(5, fechaFin);
-            ps.setString(6, fechaFin);
-            ps.setObject(7, cupoMin);
-            ps.setObject(8, cupoMin);
-            ps.setObject(9, cupoMax);
-            ps.setObject(10, cupoMax);
 
             ResultSet rs = ps.executeQuery();
+            int contador = 0;
             while (rs.next()) {
+                contador++;
+                System.out.println("Fila: " + contador + " -> Evento: " + rs.getString("codigoEvento")
+                        + ", Participante: " + rs.getString("nombreParticipante"));
+
                 lista.add(new ReporteEvento(
-                        rs.getString("Codigo"),
-                        rs.getString("Fecha_Evento"),
-                        rs.getString("Titulo"),
-                        rs.getString("Tipo_Evento"),
-                        rs.getString("Ubicacion"),
-                        rs.getInt("Cupo_Maximo"),
-                        rs.getString("Correo"),
-                        rs.getString("NombreParticipante"),
-                        rs.getString("tipoInscripcion"),
-                        rs.getString("tipoPago"),
-                        rs.getDouble("Pago_Evento")
+                        rs.getString("codigoEvento"),
+                        rs.getString("fechaEvento"),
+                        rs.getString("titulo"),
+                        rs.getString("tipoEvento"),
+                        rs.getString("ubicacion"),
+                        rs.getInt("cupoMaximo"),
+                        rs.getString("correoParticipante"),
+                        rs.getString("nombreParticipante"),
+                        rs.getString("tipoParticipante"),
+                        rs.getString("metodoPago"),
+                        rs.getDouble("monto")
                 ));
             }
+
+            if (contador == 0) {
+                System.out.println("No se encontraron registros.");
+            }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
+
         return lista;
     }
+
 }

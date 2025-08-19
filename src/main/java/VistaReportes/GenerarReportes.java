@@ -5,9 +5,13 @@
 package VistaReportes;
 
 import ControladorReportes.ControladorGenerarReporte;
+import ControladorReportes.ReporteActividad;
+import ControladorReportes.ReporteEvento;
 import ControladorReportes.ReporteParticipante;
 import GenerardorHTML.ReporteHTML;
 import java.util.List;
+import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -24,6 +28,68 @@ public class GenerarReportes extends javax.swing.JInternalFrame {
         initComponents();
         reporteHTML = new ReporteHTML();
     }
+
+    private void generarReporteParticipante() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Guardar Reporte de Participantes");
+        chooser.setSelectedFile(new java.io.File("ReporteParticipantes.html"));
+
+        int opcion = chooser.showSaveDialog(this);
+        if (opcion == JFileChooser.APPROVE_OPTION) {
+            java.io.File archivo = chooser.getSelectedFile();
+            String ruta = archivo.getAbsolutePath();
+
+            ControladorGenerarReporte controlador = new ControladorGenerarReporte();
+            List<ReporteParticipante> participantes = controlador.obtenerReporteParticipantes("", "", "");
+
+            ReporteHTML html = new ReporteHTML();
+            html.generarReporteParticipantes(participantes, ruta);
+
+            JOptionPane.showMessageDialog(this, "Reporte generado correctamente en:\n" + ruta);
+        }
+    }
+
+    private void generarReporteActividades() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Guardar Reporte de Actividades");
+        chooser.setSelectedFile(new java.io.File("ReporteActividades.html"));
+
+        int opcion = chooser.showSaveDialog(this);
+        if (opcion == JFileChooser.APPROVE_OPTION) {
+            java.io.File archivo = chooser.getSelectedFile();
+            String ruta = archivo.getAbsolutePath();
+
+            ControladorGenerarReporte controlador = new ControladorGenerarReporte();
+            List<ReporteActividad> actividades = controlador.obtenerActividadesParaReporte("", "", "");
+
+            ReporteHTML html = new ReporteHTML();
+            html.generarReporteActividades(actividades, ruta);
+
+            JOptionPane.showMessageDialog(this, "Reporte generado correctamente en:\n" + ruta);
+        }
+    }
+    
+    private void generarReporteEventos() {
+        JFileChooser chooser = new JFileChooser();
+        chooser.setDialogTitle("Guardar Reporte de Eventos");
+        chooser.setSelectedFile(new java.io.File("ReporteEvento.html"));
+
+        int opcion = chooser.showSaveDialog(this);
+        if (opcion == JFileChooser.APPROVE_OPTION) {
+            java.io.File archivo = chooser.getSelectedFile();
+            String ruta = archivo.getAbsolutePath();
+
+            ControladorGenerarReporte controlador = new ControladorGenerarReporte();
+            List<ReporteEvento> eventos = controlador.obtenerReporteEventos();
+
+            ReporteHTML html = new ReporteHTML();
+            html.generarReporteEventos(eventos, ruta);
+
+            JOptionPane.showMessageDialog(this, "Reporte generado correctamente en:\n" + ruta);
+        }
+    }
+    
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -47,8 +113,18 @@ public class GenerarReportes extends javax.swing.JInternalFrame {
         });
 
         jButtonEvento.setText("Generar Reporte Eventos");
+        jButtonEvento.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonEventoActionPerformed(evt);
+            }
+        });
 
         jButtonActividad.setText("Generar Reporte Actividades");
+        jButtonActividad.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButtonActividadActionPerformed(evt);
+            }
+        });
 
         jLabel1.setText("Reportes");
 
@@ -85,22 +161,16 @@ public class GenerarReportes extends javax.swing.JInternalFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButtonParticipanteActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonParticipanteActionPerformed
-        javax.swing.JFileChooser fileChooser = new javax.swing.JFileChooser();
-        fileChooser.setDialogTitle("Guardar Reporte Participantes");
-        fileChooser.setSelectedFile(new java.io.File("ReporteParticipantes.html"));
-
-        int seleccion = fileChooser.showSaveDialog(this);
-        if (seleccion == javax.swing.JFileChooser.APPROVE_OPTION) {
-            java.io.File archivo = fileChooser.getSelectedFile();
-            String ruta = archivo.getAbsolutePath();
-
-            ControladorGenerarReporte controlador = new ControladorGenerarReporte();
-            List<ReporteParticipante> participantes = controlador.reporteParticipantes("", "", "");
-            reporteHTML.generarReporteParticipantes(participantes, "ReporteParticipantes.html");
-
-            javax.swing.JOptionPane.showMessageDialog(this, "Reporte generado correctamente en:\n" + ruta);
-        }
+        generarReporteParticipante();
     }//GEN-LAST:event_jButtonParticipanteActionPerformed
+
+    private void jButtonActividadActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonActividadActionPerformed
+        generarReporteActividades();
+    }//GEN-LAST:event_jButtonActividadActionPerformed
+
+    private void jButtonEventoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButtonEventoActionPerformed
+        generarReporteEventos();
+    }//GEN-LAST:event_jButtonEventoActionPerformed
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
