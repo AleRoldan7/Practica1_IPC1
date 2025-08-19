@@ -66,6 +66,7 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
         jButton1 = new javax.swing.JButton();
         jTextFieldTiempo = new javax.swing.JTextField();
         jTextFieldConsola = new javax.swing.JTextField();
+        jLabel2 = new javax.swing.JLabel();
 
         jMenu1.setText("jMenu1");
 
@@ -83,6 +84,8 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
             }
         });
 
+        jLabel2.setText("Colocar Milisegundos");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -98,7 +101,9 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
                             .addComponent(jTextFieldConsola, javax.swing.GroupLayout.PREFERRED_SIZE, 841, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createSequentialGroup()
                                 .addComponent(jButton1)
-                                .addGap(144, 144, 144)
+                                .addGap(156, 156, 156)
+                                .addComponent(jLabel2)
+                                .addGap(18, 18, 18)
                                 .addComponent(jTextFieldTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, 165, javax.swing.GroupLayout.PREFERRED_SIZE)))))
                 .addContainerGap(65, Short.MAX_VALUE))
         );
@@ -109,7 +114,8 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
                 .addGap(64, 64, 64)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jButton1)
-                    .addComponent(jTextFieldTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jTextFieldTiempo, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(jLabel2))
                 .addGap(78, 78, 78)
                 .addComponent(jTextFieldConsola, javax.swing.GroupLayout.PREFERRED_SIZE, 337, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 77, Short.MAX_VALUE))
@@ -126,6 +132,7 @@ public class CargarArchivo extends javax.swing.JInternalFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JTextField jTextFieldConsola;
     private javax.swing.JTextField jTextFieldTiempo;
