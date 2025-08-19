@@ -161,7 +161,7 @@ public class LeerArchivo {
 
             case "ASISTENCIA":
                 EntidadAsistencia entidadAsistencia = new EntidadAsistencia(datos.get(0), datos.get(1));
-                asistencia.agregarAsistencia(entidadAsistencia);
+                asistencia.registrarAsistencia(entidadAsistencia);
                 System.out.println("Asistencia: " + datos);
                 break;
 
